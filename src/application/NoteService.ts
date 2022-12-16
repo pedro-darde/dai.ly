@@ -8,7 +8,7 @@ export default class NoteService {
 
   async getNote(noteId: number): Promise<NoteWithId> {
     const note = await this.noteRepository.getNote(noteId);
-    if (!note) throw new EntityNotFoundError(noteId);
+    if (!note) throw new EntityNotFoundError(noteId, "Note");
     return note;
   }
 }
