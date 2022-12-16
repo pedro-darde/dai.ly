@@ -1,5 +1,5 @@
-import EntityNotFoundError from "../errors/http/EntityNotFoundError";
-import { ServerError } from "../errors/http/ServerError";
+import EntityNotFoundError from "../../presentation/errors/EntityNotFoundError";
+import { ServerError } from "../../presentation/errors/ServerError";
 
 export const notFound = (error: EntityNotFoundError) => ({
   statusCode: error.statusCode,
