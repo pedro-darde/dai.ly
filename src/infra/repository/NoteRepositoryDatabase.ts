@@ -22,6 +22,13 @@ export default class NoteRepositoryDatabase implements NoteRepository {
     return noteData;
   }
 
+  async getAll(): Promise<NoteWithId[]> {
+    return await this.connection.query<NoteWithId[]>(
+      "SELECT * FROM phd.notes",
+      []
+    );
+  }
+
   async clear(): Promise<void> {
     await this.connection.query("TRUNCATE TABLE phd.notes", []);
   }

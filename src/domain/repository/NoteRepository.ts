@@ -7,4 +7,5 @@ export default interface NoteRepository {
   save: (note: Note) => Promise<void>;
   getNote: (idNote: number) => Promise<NoteWithId>;
   clear: () => Promise<void>;
+  getAll: () => Promise<NoteWithId[]>;
 }
