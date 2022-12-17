@@ -15,3 +15,8 @@ export const ok = (data: any) => ({
   statusCode: 200,
   body: data,
 });
+
+export const badRequest = (err: Error) => ({
+  statusCode: 400,
+  body: err,
+});

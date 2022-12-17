@@ -9,7 +9,7 @@ export default class NoteRepositoryDatabase implements NoteRepository {
 
   async save(note: Note): Promise<void> {
     await this.connection.query(
-      "INSERT INTO phd.notes (description,fixed) VALUES $1, $2",
+      "INSERT INTO phd.notes (description,fixed) VALUES ($1, $2)",
       [note.description, note.fixed]
     );
   }
