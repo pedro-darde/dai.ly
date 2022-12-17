@@ -14,4 +14,20 @@ export default class NoteService {
   async create(data: Note): Promise<void> {
     await this.noteRepository.save(data);
   }
+
+  async getAll(): Promise<NoteWithId[]> {
+    return await this.noteRepository.getAll();
+  }
+
+  async changeFix(noteId: number, fixed: boolean): Promise<void> {
+    await this.noteRepository.changeFix(noteId, fixed);
+  }
+
+  async deleteNote(noteId: number): Promise<void> {
+    await this.noteRepository.deleteNote(noteId);
+  }
+
+  async updateNote(note: Note, idNote: number) {
+    await this.noteRepository.updateNote(note, idNote);
+  }
 }

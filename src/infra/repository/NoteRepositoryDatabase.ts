@@ -29,6 +29,26 @@ export default class NoteRepositoryDatabase implements NoteRepository {
     );
   }
 
+  async changeFix(idNote: number, fixed: boolean): Promise<void> {
+    await this.connection.query(
+      "UPDATE phd.notes SET fixed = $1 WHERE id = $2",
+      [fixed, idNote]
+    );
+  }
+
+  async deleteNote(idNote: number): Promise<void> {
+    await this.connection.query("DELETE FROM phd.notes WHERE id = $1", [
+      idNote,
+    ]);
+  }
+
+  async updateNote(note: Note, idNote: number): Promise<void> {
+    await this.connection.query(
+      "UPDATE phd.notes SET description = $1 WHERE id = $2",
+      [note.description, idNote]
+    );
+  }
+
   async clear(): Promise<void> {
     await this.connection.query("TRUNCATE TABLE phd.notes", []);
   }

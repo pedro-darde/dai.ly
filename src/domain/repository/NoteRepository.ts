@@ -8,4 +8,7 @@ export default interface NoteRepository {
   getNote: (idNote: number) => Promise<NoteWithId>;
   clear: () => Promise<void>;
   getAll: () => Promise<NoteWithId[]>;
+  changeFix: (idNote: number, fixed: boolean) => Promise<void>;
+  deleteNote: (idNote: number) => Promise<void>;
+  updateNote: (note: Note, idNote: number) => Promise<void>;
 }
