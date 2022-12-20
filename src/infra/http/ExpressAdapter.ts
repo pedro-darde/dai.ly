@@ -1,11 +1,12 @@
 import express from "express";
 import HttpServer, { HttpMethods } from "./HttpServer";
-
+import cors from "cors";
 export default class ExpressAdapter implements HttpServer {
   app;
   constructor() {
     this.app = express();
     this.app.use(express.json());
+    this.app.use(cors());
   }
 
   listen(port: number): void {

@@ -1,12 +1,14 @@
 import NoteService from "./application/NoteService";
 import RestController from "./infra/controller/RestController";
 import PgPromiseAdapter from "./infra/database/PgPromiseAdapter";
+import DateFnsAdapter from "./infra/date/DateFnsAdapter";
 import ExpressAdapter from "./infra/http/ExpressAdapter";
 import NoteRepositoryDatabase from "./infra/repository/NoteRepositoryDatabase";
 import { RequiredFieldValidation } from "./validators/RequiredFieldValidation";
 
+const dateFnsAdapter = new DateFnsAdapter();
 const connection = new PgPromiseAdapter();
-const noteRepository = new NoteRepositoryDatabase(connection);
+const noteRepository = new NoteRepositoryDatabase(connection, dateFnsAdapter);
 const noteService = new NoteService(noteRepository);
 const expressServer = new ExpressAdapter();
 

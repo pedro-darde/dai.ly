@@ -30,4 +30,8 @@ export default class NoteService {
   async updateNote(note: Note, idNote: number) {
     await this.noteRepository.updateNote(note, idNote);
   }
+
+  async latestNotes(): Promise<NoteWithId[]> {
+    return await this.noteRepository.latestNotes();
+  }
 }

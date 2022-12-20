@@ -3,9 +3,13 @@ import NoteRepository, {
   NoteWithId,
 } from "../../domain/repository/NoteRepository";
 import Connection from "../database/Connection";
+import DateHandler from "../date/DateHandler";
 
 export default class NoteRepositoryDatabase implements NoteRepository {
-  constructor(readonly connection: Connection) {}
+  constructor(
+    readonly connection: Connection,
+    readonly dateHandler: DateHandler
+  ) {}
 
   async save(note: Note): Promise<void> {
     await this.connection.query(
@@ -24,7 +28,7 @@ export default class NoteRepositoryDatabase implements NoteRepository {
 
   async getAll(): Promise<NoteWithId[]> {
     return await this.connection.query<NoteWithId[]>(
-      "SELECT * FROM phd.notes",
+      "SELECT * FROM phd.notes ORDER BY fixed, created_at, id",
       []
     );
   }
@@ -46,6 +50,14 @@ export default class NoteRepositoryDatabase implements NoteRepository {
     await this.connection.query(
       "UPDATE phd.notes SET description = $1 WHERE id = $2",
       [note.description, idNote]
+    );
+  }
+
+  async latestNotes(): Promise<NoteWithId[]> {
+    const sevenDaysAgo = this.dateHandler.remove(new Date(), 1, "weeks");
+    return await this.connection.query<NoteWithId[]>(
+      "SELECT * FROM phd.notes WHERE date(created_at) >= date($1) ORDER BY fixed, created_at, id ",
+      [sevenDaysAgo]
     );
   }
 

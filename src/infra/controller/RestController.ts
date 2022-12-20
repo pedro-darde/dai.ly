@@ -47,8 +47,9 @@ export default class RestController {
         try {
           const error = fixNoteValidation.validate(body);
           if (error) return badRequest(error);
-          const exists = await noteService.getNote(params.idNote)
-          if(!exists) return notFound(new EntityNotFoundError(params.idNote, "Note"))
+          const exists = await noteService.getNote(params.idNote);
+          if (!exists)
+            return notFound(new EntityNotFoundError(params.idNote, "Note"));
           await noteService.changeFix(params.idNote, body.fixed);
           return ok({ message: "Fixed change" });
         } catch (err: any) {
@@ -76,6 +77,16 @@ export default class RestController {
         await noteService.updateNote(body, params.idNote);
         return ok({ message: "Note updated" });
       } catch (err: any) {
+        return serverError(err);
+      }
+    });
+
+    server.on("get", "/latests", async function (params: any, body: any) {
+      try {
+        const notes = await noteService.latestNotes();
+        return ok(notes);
+      } catch (err: any) {
+        console.log(err)
         return serverError(err);
       }
     });
