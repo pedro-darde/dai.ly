@@ -1,12 +1,10 @@
 import Note from "../domain/entity/Note";
-import NoteRepository, {
-  NoteWithId,
-} from "../domain/repository/NoteRepository";
+import NoteRepository from "../domain/repository/NoteRepository";
 
 export default class NoteService {
   constructor(readonly noteRepository: NoteRepository) {}
 
-  async getNote(noteId: number): Promise<NoteWithId> {
+  async getNote(noteId: number): Promise<Note> {
     const note = await this.noteRepository.getNote(noteId);
     return note;
   }
@@ -15,7 +13,7 @@ export default class NoteService {
     await this.noteRepository.save(data);
   }
 
-  async getAll(): Promise<NoteWithId[]> {
+  async getAll(): Promise<Note[]> {
     return await this.noteRepository.getAll();
   }
 
@@ -31,7 +29,7 @@ export default class NoteService {
     await this.noteRepository.updateNote(note, idNote);
   }
 
-  async latestNotes(): Promise<NoteWithId[]> {
+  async latestNotes(): Promise<Note[]> {
     return await this.noteRepository.latestNotes();
   }
 }
