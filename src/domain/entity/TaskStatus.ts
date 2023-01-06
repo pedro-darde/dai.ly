@@ -1,0 +1,9 @@
+export enum TaskStatus {
+  NEW,
+  WIP,
+  DONE,
+  REJECTED,
+  WAITING_VALIDATION,
+  VALIDATED,
+  WITH_ERRORS,
+}

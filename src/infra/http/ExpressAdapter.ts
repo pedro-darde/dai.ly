@@ -1,6 +1,7 @@
 import express from "express";
 import HttpServer, { HttpMethods } from "./HttpServer";
 import cors from "cors";
+import { HttpResponse } from "../helpers/HttpHelper";
 export default class ExpressAdapter implements HttpServer {
   app;
   constructor() {
@@ -13,7 +14,7 @@ export default class ExpressAdapter implements HttpServer {
     this.app.listen(port);
   }
 
-  on(method: HttpMethods, url: string, callback: Function): void {
+  on(method: HttpMethods, url: string, callback: (params: any, body: any) => Promise<HttpResponse>): void {
     this.app[method](url, async (req, res) => {
       const output = await callback(req.params, req.body);
       res.status(output.statusCode).json(output.body);

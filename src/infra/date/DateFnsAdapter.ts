@@ -1,5 +1,5 @@
 import DateHandler from "./DateHandler";
-import { add, sub, format as formatterr } from "date-fns";
+import { add, sub, format as formatter } from "date-fns";
 
 export default class DateFnsAdapter implements DateHandler {
   add(
@@ -18,6 +18,6 @@ export default class DateFnsAdapter implements DateHandler {
   }
 
   format(date: Date, format: string): string {
-    return formatterr(date, format);
+    return formatter(date, format);
   }
 }

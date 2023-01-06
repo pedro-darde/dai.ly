@@ -1,6 +1,6 @@
 import { MissingParamError } from "../presentation/errors/MissingParamError";
 import { Validation } from "../presentation/protocols/Validation";
-    
+
 export class RequiredFieldValidation implements Validation {
   private readonly fieldName: string;
   constructor(fieldName: string) {
@@ -8,7 +8,10 @@ export class RequiredFieldValidation implements Validation {
   }
 
   validate(input: any): Error | void {
-    if (!input?.hasOwnProperty(this.fieldName) || input[this.fieldName] === "") {
+    if (
+      !input?.hasOwnProperty(this.fieldName) ||
+      input[this.fieldName] === ""
+    ) {
       return new MissingParamError(this.fieldName);
     }
   }

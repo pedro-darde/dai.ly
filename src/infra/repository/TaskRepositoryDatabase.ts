@@ -7,13 +7,16 @@ export default class TaskRepositoryDatabase implements TaskRepository {
 
   async save(task: Task): Promise<void> {
     await this.connection.query(
-      "INSERT INTO phd.tasks (about,expected_time,start_at, ended_at, time_spent) VALUES ($1,$2,$3,$4,$5",
+      "INSERT INTO phd.tasks (title,about,expected_time,start_at, ended_at, time_spent,status, expected_date) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)",
       [
+        task.title,
         task.about,
         task.expectedTime,
         task.startAt,
         task.endedAt,
         task.timeSpent,
+        task.status,
+        task.expectedDate,
       ]
     );
   }

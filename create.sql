@@ -7,11 +7,14 @@ CREATE TABLE phd.notes (
 
 CREATE TABLE phd.tasks (
     id SERIAL  PRIMARY KEY,
+    title VARCHAR not null,
     about VARCHAR not null,
-    expected_time integer null,
+    expected_time numeric(5,2) null,
+    expected_date TIMESTAMP null,
+    status integer default 0,
     start_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ended_at TIMESTAMP DEFAULT NULL,
-    time_spent integer null
+    time_spent numeric(5,2) null
 );
 
 CREATE TABLE phd.task_note(

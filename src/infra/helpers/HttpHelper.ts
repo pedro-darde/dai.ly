@@ -1,6 +1,11 @@
 import EntityNotFoundError from "../../presentation/errors/EntityNotFoundError";
 import { ServerError } from "../../presentation/errors/ServerError";
 
+export type HttpResponse = {
+  statusCode: number;
+  body: any;
+};
+
 export const notFound = (error: EntityNotFoundError) => ({
   statusCode: error.statusCode,
   body: error,
