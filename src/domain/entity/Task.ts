@@ -2,7 +2,7 @@ export default class Task {
   constructor(
     readonly id: number,
     readonly title: string,
-    readonly about: number,
+    readonly about: string,
     readonly expectedTime: number,
     readonly startAt: Date,
     readonly status: number,

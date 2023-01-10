@@ -10,4 +10,5 @@ export default interface DateHandler {
     unity: "days" | "months" | "years" | "weeks"
   ) => Date;
   format: (date: Date, format: string) => string;
+  difference: (firstDate: Date, secondDate: Date, returnAs: "hours" | "days" | "minutes") => number;
 }

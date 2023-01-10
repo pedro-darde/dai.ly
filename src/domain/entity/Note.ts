@@ -1,8 +1,8 @@
 import Task from "./Task";
-import TaskNote from "./TaskNote";
+import NoteTask from "./NoteTask";
 
 export default class Note {
-  private tasksNotes: TaskNote[];
+  private tasksNotes: NoteTask[];
   constructor(
     readonly id: number,
     readonly description: string,
@@ -13,7 +13,7 @@ export default class Note {
   }
 
   addTask(task: Task) {
-    this.tasksNotes.push(new TaskNote(task.id, this.id));
+    this.tasksNotes.push(new NoteTask(task.id, this.id));
   }
 
   getId() {

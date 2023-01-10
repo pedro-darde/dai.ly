@@ -7,8 +7,11 @@ import DateFnsAdapter from "./infra/date/DateFnsAdapter";
 import ExpressAdapter from "./infra/http/ExpressAdapter";
 import NoteRepositoryDatabase from "./infra/repository/NoteRepositoryDatabase";
 import TaskRepositoryDatabase from "./infra/repository/TaskRepositoryDatabase";
-import { RequiredFieldValidation } from "./validators/RequiredFieldValidation";
-import { ValidationComposite } from "./validators/ValidationComposite";
+import {RequiredFieldValidation} from "./validators/RequiredFieldValidation";
+import {ValidationComposite} from "./validators/ValidationComposite";
+import ValidateTask from "./application/ValidateTask";
+import NoteTaskService from "./application/NoteTaskService";
+import NoteTaskRepositoryDatabase from "./infra/repository/NoteTaskRepositoryDatabase";
 
 const dateFnsAdapter = new DateFnsAdapter();
 const connection = new PgPromiseAdapter();
@@ -20,20 +23,25 @@ const requiredFixed = new RequiredFieldValidation("fixed");
 
 const taskRepository = new TaskRepositoryDatabase(connection)
 const taskService = new TaskService(taskRepository)
+const validateTask = new ValidateTask(taskRepository, dateFnsAdapter)
 
 const createTaskValidation = new ValidationComposite([
-  new RequiredFieldValidation("about"),
-  new RequiredFieldValidation("title"),
-  new RequiredFieldValidation("status"),
+    new RequiredFieldValidation("about"),
+    new RequiredFieldValidation("title"),
+    new RequiredFieldValidation("status"),
 
 ]);
 
+const noteTaskRepository = new NoteTaskRepositoryDatabase(connection)
+const noteTaskService = new NoteTaskService(noteTaskRepository)
+
 new NoteController(
-  expressServer,
-  noteService,
-  requiredDescription,
-  requiredFixed
+    expressServer,
+    noteService,
+    noteTaskService,
+    requiredDescription,
+    requiredFixed
 );
 
-new TaskController(expressServer, taskService, createTaskValidation)
+new TaskController(expressServer, taskService, validateTask, createTaskValidation)
 expressServer.listen(3000);

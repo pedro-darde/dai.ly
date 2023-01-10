@@ -3,7 +3,6 @@ export enum TaskStatus {
   WIP,
   DONE,
   REJECTED,
-  WAITING_VALIDATION,
-  VALIDATED,
   WITH_ERRORS,
+  VALIDATED
 }

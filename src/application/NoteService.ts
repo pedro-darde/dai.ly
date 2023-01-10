@@ -9,8 +9,9 @@ export default class NoteService {
     return note;
   }
 
-  async create(data: Note): Promise<void> {
-    await this.noteRepository.save(data);
+  async create(data: Note, returnId: boolean = false): Promise<void|number> {
+    const id = await this.noteRepository.save(data, returnId);
+    if(returnId) return id
   }
 
   async getAll(): Promise<Note[]> {

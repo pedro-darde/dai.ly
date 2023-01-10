@@ -9,12 +9,12 @@ CREATE TABLE phd.tasks (
     id SERIAL  PRIMARY KEY,
     title VARCHAR not null,
     about VARCHAR not null,
-    expected_time numeric(5,2) null,
+    expected_time integer,
     expected_date TIMESTAMP null,
     status integer default 0,
     start_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ended_at TIMESTAMP DEFAULT NULL,
-    time_spent numeric(5,2) null
+    time_spent integer
 );
 
 CREATE TABLE phd.task_note(
