@@ -23,5 +23,5 @@ export const ok = (data: any) => ({
 
 export const badRequest = (err: Error) => ({
   statusCode: 400,
-  body: err,
+  body: err
 });
