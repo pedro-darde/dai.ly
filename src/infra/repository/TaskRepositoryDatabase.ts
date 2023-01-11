@@ -122,11 +122,23 @@ export default class TaskRepositoryDatabase implements TaskRepository {
         await this.connection.query("UPDATE phd.tasks SET time_spent = $1, status = $2, ended_at = $3 WHERE id = $4", [timeSpent, TaskStatus.VALIDATED, new Date(), id])
     }
 
-    async getValidatedAndRejected(): Promise<Task[]> {
-        const tasksData = await this.connection.query<TaskDatabase[]>("SELECT * FROM phd.tasks WHERE status in($1, $2)", [TaskStatus.VALIDATED, TaskStatus.REJECTED])
-        const tasks: Task[] = []
-        for (const taskData of tasksData) {
-            tasks.push(new Task(taskData.id, taskData.title, taskData.about, taskData.expected_time, taskData.start_at, taskData.status, taskData.expected_date, taskData.ended_at, taskData.time_spent))
+    async getValidatedAndRejected(): Promise<TaskWithNoteFlag[]> {
+        const tasksData = await this.connection.query<TaskDatabase[]>("SELECT task.*, array_agg(tn.id_note) as notes FROM phd.tasks task LEFT JOIN phd.task_note tn ON tn.id_task = task.id WHERE task.status in($1, $2) GROUP BY task.id ORDER BY task.id ", [TaskStatus.VALIDATED, TaskStatus.REJECTED])
+        const tasks: TaskWithNoteFlag[] = [];
+        for (const task of tasksData) {
+            tasks.push({
+                id: task.id,
+                title: task.title,
+                about: task.about,
+                expectedTime: task.expected_time,
+                startAt: task.start_at,
+                status: task.status,
+                endedAt: task.ended_at,
+                timeSpent: task.time_spent,
+                expectedDate: task.expected_date,
+                hasNotes: !!task.notes.length,
+                notes: task.notes
+            })
         }
         return tasks;
     }

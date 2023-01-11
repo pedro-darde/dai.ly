@@ -26,5 +26,5 @@ export default interface TaskRepository {
     edit: (idTask: number, task: Task) => Promise<void>
     remove: (id: number, hasNotes: boolean) => Promise<void>
     markAsDone: (id: number, timeSpent: number) => Promise<void>
-    getValidatedAndRejected: () => Promise<Task[]>
+    getValidatedAndRejected: () => Promise<TaskWithNoteFlag[]>
 }
