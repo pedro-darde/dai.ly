@@ -28,7 +28,7 @@ export default class NoteRepositoryDatabase implements NoteRepository {
 
     async getAll(): Promise<Note[]> {
         return await this.connection.query<Note[]>(
-            "SELECT * FROM phd.notes ORDER BY fixed, created_at, id",
+            "SELECT note.*, (SELECT array_agg(id_task) FROM phd.task_note tn WHERE tn.id_note = note.id) as tasks FROM phd.notes note ORDER BY note.fixed, note.created_at, note.id",
             []
         );
     }
