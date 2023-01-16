@@ -2,6 +2,7 @@ import PlanningMonth from "./PlanningMonth";
 
 export default class Planning {
   private planningMonths: PlanningMonth[];
+  balance = 0;
   constructor(
     readonly year: number,
     readonly status: number,
@@ -13,5 +14,11 @@ export default class Planning {
     this.planningMonths = [];
   }
 
-  addMonth(month: number, monthTitle: number) {}
+  addMonth(planningMonth: PlanningMonth) {
+    this.planningMonths.push(planningMonth)
+  }
+
+  getMonths() {
+    return this.planningMonths
+  }
 }
