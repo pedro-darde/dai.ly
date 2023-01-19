@@ -5,10 +5,10 @@ import { PlanningStatus } from "../domain/entity/PlanningStatus";
 import PlanningMonthRepository from "../domain/repository/PlanningMonthRepository";
 import PlanningRepository from "../domain/repository/PlanningRepository";
 
-export default class PlanningService {
-    constructor(readonly planningRepository: PlanningRepository, planningMonthRepository: PlanningMonthRepository) {}
+export default class StartPlanning {
+    constructor(readonly planningRepository: PlanningRepository) {}
 
-    async createPlanning(input: InputCreate): Promise<void> {
+    async execute(input: InputCreate): Promise<void> {
         let balancePlanning = 0;
         const planning = new Planning(input.year,PlanningStatus.ACTIVE, input.planningTitle, input.expectedAmount, input.planningStart, input.planningEnd)
         if (input.months) {
@@ -21,6 +21,7 @@ export default class PlanningService {
                 }
                 planningMonth.balance = BalanceCalculator.CalculateMonthBalance(planningMonth.getItens())
                 balancePlanning += planningMonth.balance
+                planning.addMonth(planningMonth)
             }
         }
         planning.balance = balancePlanning

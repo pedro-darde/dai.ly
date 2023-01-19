@@ -12,6 +12,7 @@ import {ValidationComposite} from "./validators/ValidationComposite";
 import ValidateTask from "./application/ValidateTask";
 import NoteTaskService from "./application/NoteTaskService";
 import NoteTaskRepositoryDatabase from "./infra/repository/NoteTaskRepositoryDatabase";
+import PlanningController from "./infra/controller/PlanningController";
 
 const dateFnsAdapter = new DateFnsAdapter();
 const connection = new PgPromiseAdapter();
@@ -44,4 +45,16 @@ new NoteController(
 );
 
 new TaskController(expressServer, taskService, validateTask, createTaskValidation)
+
+
+const createEditPlanningValidation = new ValidationComposite([
+    new RequiredFieldValidation("year"),
+    new RequiredFieldValidation("planningStart"),
+    new RequiredFieldValidation("planningTitle"),
+    new RequiredFieldValidation("expectedAmount"),
+    new RequiredFieldValidation("months.*")
+])
+
+new PlanningController(expressServer, [], )
+
 expressServer.listen(3001);

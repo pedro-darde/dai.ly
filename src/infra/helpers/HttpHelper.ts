@@ -13,7 +13,7 @@ export const notFound = (error: EntityNotFoundError) => ({
 
 export const serverError = (e: Error) => ({
   statusCode: 500,
-  body: new ServerError(e.stack!),
+  body: new ServerError(),
 });
 
 export const ok = (data: any) => ({
