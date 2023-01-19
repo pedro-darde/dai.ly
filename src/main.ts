@@ -13,6 +13,8 @@ import ValidateTask from "./application/ValidateTask";
 import NoteTaskService from "./application/NoteTaskService";
 import NoteTaskRepositoryDatabase from "./infra/repository/NoteTaskRepositoryDatabase";
 import PlanningController from "./infra/controller/PlanningController";
+import StartPlanning from "./application/StartPlanning";
+import PlanningRepositoryDatabase from "./infra/repository/PlanningRepositoryDatabase";
 
 const dateFnsAdapter = new DateFnsAdapter();
 const connection = new PgPromiseAdapter();
@@ -45,16 +47,13 @@ new NoteController(
 );
 
 new TaskController(expressServer, taskService, validateTask, createTaskValidation)
-
-
+const planningRepository = new PlanningRepositoryDatabase(connection)
+const startPlanning = new StartPlanning(planningRepository)
 const createEditPlanningValidation = new ValidationComposite([
-    new RequiredFieldValidation("year"),
-    new RequiredFieldValidation("planningStart"),
-    new RequiredFieldValidation("planningTitle"),
-    new RequiredFieldValidation("expectedAmount"),
-    new RequiredFieldValidation("months.*")
+    new RequiredFieldValidation("year,planningStart,planningTitle,expectedAmount"),
+    new RequiredFieldValidation("months.*.id_month"),
 ])
 
-new PlanningController(expressServer, [], )
+new PlanningController(expressServer, startPlanning, createEditPlanningValidation)
 
 expressServer.listen(3001);

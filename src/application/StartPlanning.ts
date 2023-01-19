@@ -13,7 +13,7 @@ export default class StartPlanning {
         const planning = new Planning(input.year,PlanningStatus.ACTIVE, input.planningTitle, input.expectedAmount, input.planningStart, input.planningEnd)
         if (input.months) {
             for (const month of input.months) {
-                const planningMonth = new PlanningMonth(month.idMonth)
+                const planningMonth = new PlanningMonth(month.idMonth, month.expectedAmount)
                 if (month.items) {
                     for (const item of month.items) {
                         planningMonth.addItem(item.value, item.operation, item.date, item.paymentMethod)
@@ -37,6 +37,7 @@ type InputCreate = {
     year: number,
     expectedAmount: number,
     months: {
+        expectedAmount: number,
         idMonth: number,
         items: {
             value: number,

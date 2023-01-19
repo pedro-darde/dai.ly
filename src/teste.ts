@@ -1,4 +1,8 @@
 import { RequiredFieldValidation } from "./validators/RequiredFieldValidation";
+import {ValidationComposite} from "./validators/ValidationComposite";
 
-const validate = new RequiredFieldValidation("months.*.name.*.o")
-console.log(validate.validate({months: [{ name: [ {o: 123} ] }, { name: 123 }]}))
+const validationComposite = new ValidationComposite([
+    new RequiredFieldValidation("batatas,doces"),
+    new RequiredFieldValidation("months.*.idMonth,items.*.name,fodase")
+])
+console.log(validationComposite.validate({batatas: null, doces: "asads",  months: [{ idMonth: 10 , items: [{"name": "123" }] }]}))

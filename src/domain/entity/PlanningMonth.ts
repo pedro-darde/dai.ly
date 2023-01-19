@@ -5,7 +5,7 @@ export default class PlanningMonth {
   balance = 0
   spentOnDebit = 0;
   spentOnCredit = 0;
-  constructor(readonly idMonth: number) {
+  constructor(readonly idMonth: number, readonly expectedAmount: number) {
     this.items = []
   }
 
