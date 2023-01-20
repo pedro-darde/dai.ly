@@ -1,8 +1,16 @@
-import { RequiredFieldValidation } from "./validators/RequiredFieldValidation";
-import {ValidationComposite} from "./validators/ValidationComposite";
+import RequiredArrayFieldsValidation from "./validators/RequiredArrayFieldsValidation";
 
-const validationComposite = new ValidationComposite([
-    new RequiredFieldValidation("batatas,doces"),
-    new RequiredFieldValidation("months.*.idMonth,items.*.name,items.*.fodase")
-])
-console.log(validationComposite.validate({batatas: null, doces: "asads",  months: [{ idMonth: 10 , items: [{"name": "123", fodase: "123"}, {"name": "123"}] }]}))
+const requiredArrayValidation = new RequiredArrayFieldsValidation("months", [
+  "name",
+  "description",
+]);
+
+console.log(
+  requiredArrayValidation.validate({
+    months: [
+      {
+        name: "",
+      },
+    ],
+  })
+);
