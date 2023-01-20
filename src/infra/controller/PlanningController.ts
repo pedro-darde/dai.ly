@@ -16,6 +16,7 @@ export default class PlanningController {
                 await startPlanning.execute(body)
                 return ok({ message: "Planning created" })
             } catch (e: any) {
+                console.log(e)
                 return serverError(e)
             }
         })

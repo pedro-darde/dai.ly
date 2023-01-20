@@ -16,6 +16,7 @@ import PlanningController from "./infra/controller/PlanningController";
 import StartPlanning from "./application/StartPlanning";
 import PlanningRepositoryDatabase from "./infra/repository/PlanningRepositoryDatabase";
 import { application } from "express";
+import RequiredArrayFieldsValidation from "./validators/RequiredArrayFieldsValidation";
 
 const dateFnsAdapter = new DateFnsAdapter();
 const connection = new PgPromiseAdapter();
@@ -53,7 +54,23 @@ const startPlanning = new StartPlanning(planningRepository)
 const planningValidations = "year,planningStart,planningTitle,expectedAmount".split(",").map(field => new RequiredFieldValidation(field))
 const createEditPlanningValidation = new ValidationComposite([
     ...planningValidations,
-    new RequiredFieldValidation("months.*.id_month,items.*.operation,items.*.value,items.*.date"),
+    new RequiredArrayFieldsValidation("months", [
+        {type: "string", field: "idMonth"},
+        {type: "array", field: "items", extraFields: {
+          arrayName: "items",
+          parentCount: 0,
+          fields: [{
+            field: "value",
+            type: "string"
+          }, {
+            field: "date",
+            type: "number"
+          }, {
+            field: "operation",
+            type: "string"
+          }]
+        }}
+    ]),
 ])
 
 new PlanningController(expressServer, startPlanning, createEditPlanningValidation)
