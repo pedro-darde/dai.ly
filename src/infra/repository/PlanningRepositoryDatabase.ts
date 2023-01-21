@@ -1,5 +1,5 @@
 import Planning from "../../domain/entity/Planning";
-import PlanningRepository from "../../domain/repository/PlanningRepository";
+import PlanningRepository, {  PlanningDatabase } from "../../domain/repository/PlanningRepository";
 import Connection from "../database/Connection";
 
 export default class PlanningRepositoryDatabase implements PlanningRepository {
@@ -34,18 +34,24 @@ export default class PlanningRepositoryDatabase implements PlanningRepository {
         await this.rollbackTransaction()
         throw e
     }
-  }
+    }
 
-  async commitTransaction() {
-    await this.connection.query("COMMIT;", [])
-  }
+    async getByYear(year: number): Promise<Planning> {
+        const [planningDatabase] = await this.connection.query<PlanningDatabase[]>("SELECT * FROM phd.planning WHERE year = $1", [year])
+        const planning = new Planning(planningDatabase.year, planningDatabase.status, planningDatabase.title, planningDatabase.expected_amount, planningDatabase.start_at, planningDatabase.end_at)
+        return planning
+    }
 
-  async beginTransaction() {
-    await this.connection.query("BEGIN;", [])
-  }
+    async commitTransaction() {
+        await this.connection.query("COMMIT;", [])
+    }
+    
+    async beginTransaction() {
+        await this.connection.query("BEGIN;", [])
+    }
 
-  async rollbackTransaction() {
-    await this.connection.query("ROLLBACK;", [])
-  }
-
+    async rollbackTransaction() {
+        await this.connection.query("ROLLBACK;", [])
+    }
+      
 }

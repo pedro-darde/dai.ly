@@ -15,8 +15,8 @@ import NoteTaskRepositoryDatabase from "./infra/repository/NoteTaskRepositoryDat
 import PlanningController from "./infra/controller/PlanningController";
 import StartPlanning from "./application/StartPlanning";
 import PlanningRepositoryDatabase from "./infra/repository/PlanningRepositoryDatabase";
-import { application } from "express";
 import RequiredArrayFieldsValidation from "./validators/RequiredArrayFieldsValidation";
+import GetPlanning from "./application/GetPlanning";
 
 const dateFnsAdapter = new DateFnsAdapter();
 const connection = new PgPromiseAdapter();
@@ -73,5 +73,7 @@ const createEditPlanningValidation = new ValidationComposite([
     ]),
 ])
 
-new PlanningController(expressServer, startPlanning, createEditPlanningValidation)
+const getPlanning = new GetPlanning(planningRepository)
+
+new PlanningController(expressServer, startPlanning, getPlanning, createEditPlanningValidation)
 expressServer.listen(3001);

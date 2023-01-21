@@ -2,7 +2,6 @@ import { BalanceCalculator } from "../domain/entity/BalanceCalculator";
 import Planning from "../domain/entity/Planning";
 import PlanningMonth from "../domain/entity/PlanningMonth";
 import { PlanningStatus } from "../domain/entity/PlanningStatus";
-import PlanningMonthRepository from "../domain/repository/PlanningMonthRepository";
 import PlanningRepository from "../domain/repository/PlanningRepository";
 
 export default class StartPlanning {
