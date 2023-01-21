@@ -45,10 +45,11 @@ CREATE TABLE phd.planning_month(
     id_month integer not null REFERENCES phd.months(id),
     id_planning integer not null REFERENCES phd.planning(id),
     balance NUMERIC(10,2) DEFAULT 0,
+    expected_amount NUMERIC(10,2) NOT NULL,
     UNIQUE(id_month, id_planning)
 );
 
-CREATE TABLE phd.plannig_month_item(
+CREATE TABLE phd.planning_month_item(
     id SERIAL PRIMARY KEY,
     id_month_planning  integer not null REFERENCES phd.planning_month(id),
     value numeric(10,2) NOT NULL,

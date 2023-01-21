@@ -12,6 +12,11 @@ import {ValidationComposite} from "./validators/ValidationComposite";
 import ValidateTask from "./application/ValidateTask";
 import NoteTaskService from "./application/NoteTaskService";
 import NoteTaskRepositoryDatabase from "./infra/repository/NoteTaskRepositoryDatabase";
+import PlanningController from "./infra/controller/PlanningController";
+import StartPlanning from "./application/StartPlanning";
+import PlanningRepositoryDatabase from "./infra/repository/PlanningRepositoryDatabase";
+import RequiredArrayFieldsValidation from "./validators/RequiredArrayFieldsValidation";
+import GetPlanning from "./application/GetPlanning";
 
 const dateFnsAdapter = new DateFnsAdapter();
 const connection = new PgPromiseAdapter();
@@ -44,4 +49,31 @@ new NoteController(
 );
 
 new TaskController(expressServer, taskService, validateTask, createTaskValidation)
+const planningRepository = new PlanningRepositoryDatabase(connection)
+const startPlanning = new StartPlanning(planningRepository)
+const planningValidations = "year,planningStart,planningTitle,expectedAmount".split(",").map(field => new RequiredFieldValidation(field))
+const createEditPlanningValidation = new ValidationComposite([
+    ...planningValidations,
+    new RequiredArrayFieldsValidation("months", [
+        {type: "string", field: "idMonth"},
+        {type: "array", field: "items", extraFields: {
+          arrayName: "items",
+          parentCount: 0,
+          fields: [{
+            field: "value",
+            type: "string"
+          }, {
+            field: "date",
+            type: "number"
+          }, {
+            field: "operation",
+            type: "string"
+          }]
+        }}
+    ]),
+])
+
+const getPlanning = new GetPlanning(planningRepository)
+
+new PlanningController(expressServer, startPlanning, getPlanning, createEditPlanningValidation)
 expressServer.listen(3001);
