@@ -19,7 +19,7 @@ type ExtraProps =  {
 
 export default class RequiredArrayFieldsValidation implements Validation {
   constructor(readonly arrayName: string, readonly fields: Array<FieldDefinition>) {}
-  validate(input: any, extraProps?: ExtraProps| null): Error| void {
+  validate(input: any, extraProps?: ExtraProps): Error| void {
     let count = 0
     let arrayName = this.arrayName
     let fields = this.fields
