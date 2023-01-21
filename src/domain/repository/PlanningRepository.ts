@@ -30,5 +30,5 @@ export default interface PlanningRepository {
     beginTransaction: () => Promise<void>
     commitTransaction: () => Promise<void>
     rollbackTransaction: () => Promise<void>
-    getByYear: (year:number) => Promise<Planning>
+    getByYear: (year:number) => Promise<Planning  | void>
 }

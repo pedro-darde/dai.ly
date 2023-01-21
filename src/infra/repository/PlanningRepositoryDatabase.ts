@@ -36,10 +36,13 @@ export default class PlanningRepositoryDatabase implements PlanningRepository {
     }
     }
 
-    async getByYear(year: number): Promise<Planning> {
-        const [planningDatabase] = await this.connection.query<PlanningDatabase[]>("SELECT * FROM phd.planning WHERE year = $1", [year])
-        const planning = new Planning(planningDatabase.year, planningDatabase.status, planningDatabase.title, planningDatabase.expected_amount, planningDatabase.start_at, planningDatabase.end_at)
-        return planning
+    async getByYear(year: number): Promise<Planning  | void > {
+        const data = await this.connection.query<PlanningDatabase[]>("SELECT * FROM phd.planning WHERE year = $1", [year])
+        if (data.length) {
+            const [planningDatabase] = data
+            const planning = new Planning(planningDatabase.year, planningDatabase.status, planningDatabase.title, planningDatabase.expected_amount, planningDatabase.start_at, planningDatabase.end_at)
+            return planning
+        } 
     }
 
     async commitTransaction() {

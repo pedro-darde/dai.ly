@@ -28,6 +28,7 @@ export default class PlanningController {
                 const planning = await getPlanning.execute(params.year)
                 return ok(planning)
             } catch (e: any) {
+                console.log(e)
                 return serverError(e)
             }
         })
