@@ -15,13 +15,18 @@ export type PlanningDatabase = {
         id_month: number,
         balance: number,
         expected_amount: number,
-        itens: {
+        spent_on_debit: number,
+        spent_on_credit: number,
+        total_in: number,
+        total_out: number
+        items: {
             id: number,
             id_planning_month: number,
             value: number,
-            operation: string,
+            description: string,
+            operation: "in" | "out",
             date: Date,
-            payment_method: string
+            payment_method: "debit" | "credit"
         }[]
     }[]
 }

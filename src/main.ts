@@ -63,9 +63,13 @@ const planningValidations = "year,planningStart,planningTitle,expectedAmount"
 const createEditPlanningValidation = new ValidationComposite([
   ...planningValidations,
   new RequiredArrayFieldsValidation("months", [
-    { type: "string", field: "idMonth" },
+    { type: "number", field: "idMonth" },
+    { type: "number", field: "totalIn" },
+    { type: "number", field: "totalOut" },
+    { type: "number", field: "spentOnDebit" },
+    { type: "number", field: "spentOnCredit" },
     {
-      type: "array",
+      type: "object",
       field: "items",
       extraFields: {
         arrayName: "items",
@@ -73,11 +77,11 @@ const createEditPlanningValidation = new ValidationComposite([
         fields: [
           {
             field: "value",
-            type: "string",
+            type: "number",
           },
           {
             field: "date",
-            type: "number",
+            type: "string",
           },
           {
             field: "operation",
@@ -99,4 +103,4 @@ new PlanningController(
   getMonths,
   createEditPlanningValidation
 );
-expressServer.listen(3000);
+expressServer.listen(8000);

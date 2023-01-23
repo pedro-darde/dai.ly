@@ -1,3 +1,10 @@
+DROP TABLE phd.task_note;
+DROP TABLE phd.tasks;
+DROP TABLE phd.notes;
+DROP TABLE phd.planning_month_item;
+DROP TABLE phd.planning_month;
+DROP TABLE phd.planning;
+DROP TABLE phd.months;
 CREATE TABLE phd.notes (
     id SERIAL PRIMARY KEY,
     description varchar not null,
@@ -46,6 +53,11 @@ CREATE TABLE phd.planning_month(
     id_planning integer not null REFERENCES phd.planning(id),
     balance NUMERIC(10,2) DEFAULT 0,
     expected_amount NUMERIC(10,2) NOT NULL,
+    open BOOLEAN DEFAULT true,
+    spent_on_credit NUMERIC(10,2) default 0,
+    spent_on_debit NUMERIC (10,2) default 0,
+    total_in NUMERIC(10,2) DEFAULT 0,
+    total_out NUMERIC(10,2) default 0,
     UNIQUE(id_month, id_planning)
 );
 
@@ -55,6 +67,7 @@ CREATE TABLE phd.planning_month_item(
     value numeric(10,2) NOT NULL,
     operation char(3) NOT NULL,
     date TIMESTAMP NOT NULL,
+    description VARCHAR NOT NULL,
     payment_method VARCHAR NULL
 );
 

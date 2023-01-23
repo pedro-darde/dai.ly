@@ -12,10 +12,10 @@ export default class StartPlanning {
         const planning = new Planning(input.year,PlanningStatus.ACTIVE, input.planningTitle, input.expectedAmount, input.planningStart, input.planningEnd)
         if (input.months) {
             for (const month of input.months) {
-                const planningMonth = new PlanningMonth(month.idMonth, month.expectedAmount)
+                const planningMonth = new PlanningMonth(month.idMonth, month.expectedAmount, month.spentOnDebit, month.spentOnCredit, month.totalIn, month.totalOut)
                 if (month.items) {
                     for (const item of month.items) {
-                        planningMonth.addItem(item.value, item.operation, item.date, item.paymentMethod)
+                        planningMonth.addItem(item.value, item.operation, item.date, item.description ,item.paymentMethod)
                     }
                 }
                 planningMonth.balance = BalanceCalculator.CalculateMonthBalance(planningMonth.getItens())
@@ -38,11 +38,16 @@ type InputCreate = {
     months: {
         expectedAmount: number,
         idMonth: number,
+        totalIn: number,
+        totalOut: number,
+        spentOnCredit: number,
+        spentOnDebit: number,
         items: {
             value: number,
             operation: "in" | "out",
             date: Date,
-            paymentMethod: "debit" | "credit" | null
+            paymentMethod: "debit" | "credit" | null,
+            description: string
         }[]
     }[]
 }

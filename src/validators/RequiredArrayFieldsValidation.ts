@@ -1,9 +1,10 @@
+import { MismatchTypeError } from "../presentation/errors/MismatchTypeError";
 import { MissingParamError } from "../presentation/errors/MissingParamError";
 import { Validation } from "../presentation/protocols/Validation";
 
 
 type Field = {
-    type: "string" | "array" | "number",
+    type: "string" | "object" | "number",
     field: string
 }
 
@@ -29,14 +30,20 @@ export default class RequiredArrayFieldsValidation implements Validation {
     }
     for (const item of input[arrayName] ) {
         for (const {field, type, extraFields} of fields) {
-            if (!item[field]) {
-                let extraMessage = `${this.arrayName}[${extraProps?.parentCount ?? count}]`;
-                if (this.arrayName !== arrayName) {
-                    extraMessage += `.${arrayName}[${count}]`
-                }
+            let extraMessage = `${this.arrayName}[${extraProps?.parentCount ?? count}]`;
+            if (this.arrayName !== arrayName) {
+                extraMessage += `.${arrayName}[${count}]`
+            }
+
+            if (!item.hasOwnProperty(field) || item[field] === "") {  
                 return new MissingParamError(field, extraMessage);
             }
-            if (type === "array") {
+
+            if (type !== typeof item[field]) {
+                return new MismatchTypeError(field, type, typeof item[field], extraMessage)
+            }
+
+            if (type === "object") {
                 if (extraFields) {
                     extraFields.parentCount = count
                 }
