@@ -9,7 +9,7 @@ export default class StartPlanning {
 
     async execute(input: InputCreate): Promise<void> {
         let balancePlanning = 0;
-        const planning = new Planning(input.year,PlanningStatus.ACTIVE, input.planningTitle, input.expectedAmount, input.planningStart, input.planningEnd)
+        const planning = new Planning(input.year,PlanningStatus.ACTIVE, input.title, input.expectedAmount, input.planningStart, input.planningEnd)
         if (input.months) {
             for (const month of input.months) {
                 const planningMonth = new PlanningMonth(month.idMonth, month.expectedAmount, month.spentOnDebit, month.spentOnCredit, month.totalIn, month.totalOut)
@@ -32,7 +32,7 @@ export default class StartPlanning {
 type InputCreate = {
     planningStart: Date,
     planningEnd: Date,
-    planningTitle: string,
+    title: string,
     year: number,
     expectedAmount: number,
     months: {

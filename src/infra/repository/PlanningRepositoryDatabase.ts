@@ -49,15 +49,15 @@ export default class PlanningRepositoryDatabase implements PlanningRepository {
             " FROM PHD.PLANNING PLANNING WHERE PLANNING.YEAR = $1 GROUP BY PLANNING.ID;", [year])
         if (data.length) {
             const [planningDatabase] = data
-            const planning = new Planning(planningDatabase.year, planningDatabase.status, planningDatabase.title, planningDatabase.expected_amount, planningDatabase.start_at, planningDatabase.end_at)
+            const planning = new Planning(planningDatabase.year, planningDatabase.status, planningDatabase.title, parseFloat(planningDatabase.expected_amount), planningDatabase.start_at, planningDatabase.end_at, planningDatabase.id)
             
             if (planningDatabase.months?.length) {
                 for (const month of planningDatabase.months) {
-                    const planningMonth = new PlanningMonth(planningDatabase.id, month.expected_amount,month.spent_on_debit, month.spent_on_debit, month.total_in, month.total_out)
+                    const planningMonth = new PlanningMonth(planningDatabase.id, parseFloat(month.expected_amount),parseFloat(month.spent_on_debit), parseFloat(month.spent_on_debit), parseFloat(month.total_in), parseFloat(month.total_out), month.open ,month.id)
                     if (month.items?.length) {
                         for (const item of month.items)
                         /** @ts-ignore */
-                        planningMonth.addItem(item.value, item.operation.trim(), item.date, item.description, item.payment_method)
+                        planningMonth.addItem(parseFloat(item.value), item.operation.trim(), item.date, item.description, item.payment_method,  item.id)
                     }
                     planning.addMonth(planningMonth)
                 }

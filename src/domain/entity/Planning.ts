@@ -9,7 +9,8 @@ export default class Planning {
     readonly title: string,
     readonly expectedAmount: number,
     readonly startAt: Date = new Date(),
-    readonly endAt: Date | null = null
+    readonly endAt: Date | null = null,
+    readonly id?: number
   ) {
     this.planningMonths = [];
   }
