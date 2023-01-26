@@ -26,6 +26,7 @@ type Input = {
     year: number,
     expectedAmount: number,
     months: {
+        toAdd: Array<[]>,
         expectedAmount: number,
         idMonth: number,
         totalIn: number,

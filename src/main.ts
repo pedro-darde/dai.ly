@@ -57,7 +57,7 @@ new TaskController(
 );
 const planningRepository = new PlanningRepositoryDatabase(connection);
 const startPlanning = new StartPlanning(planningRepository);
-const planningValidations = "year,planningStart,planningTitle,expectedAmount"
+const planningValidations = "year,planningStart,title,expectedAmount"
   .split(",")
   .map((field) => new RequiredFieldValidation(field));
 const createEditPlanningValidation = new ValidationComposite([
