@@ -1,3 +1,7 @@
+import { BalanceCalculator } from "../domain/entity/BalanceCalculator"
+import Planning from "../domain/entity/Planning"
+import PlanningMonth from "../domain/entity/PlanningMonth"
+import BaseRepository from "../domain/repository/BaseRepository"
 import PlanningMonthItemRepository from "../domain/repository/PlanningMonthItemRepository"
 import PlanningMonthRepository from "../domain/repository/PlanningMonthRepository"
 import PlanningRepository from "../domain/repository/PlanningRepository"
@@ -8,25 +12,50 @@ export default class EditPlanning {
         readonly planningMonthRepository: PlanningMonthRepository, 
         readonly planningMonthItemRepository: PlanningMonthItemRepository
     ) {}
-    async execute(input: Input): Promise<void> {
-        if (input.itemsToRemove.length) await this.planningMonthItemRepository.bulkDelete(input.itemsToRemove)
-        if (input.monthsToRemove.length) await this.planningMonthRepository.bulkDelete(input.monthsToRemove)
+    async execute(id: number, input: Input): Promise<void> {
+        try {
+            await this.planningRepository.beginTransaction()
+            if (input.itemsToRemove.length) await this.planningMonthItemRepository.bulkDelete(input.itemsToRemove)
+            if (input.monthsToRemove.length) await this.planningMonthRepository.bulkDelete(input.monthsToRemove)
+            let totalBalancePlanning = 0
+            const { toAdd, toUpdate } = input.months
             
+            if (toAdd.length) {
+                const monthsToInsert: PlanningMonth[] = []
+                for (const month of toAdd) {
+                    const planningMonth = new PlanningMonth(month.idMonth, month.expectedAmount, month.spentOnDebit, month.spentOnCredit, month.totalIn, month.totalOut, true)
+                    planningMonth.balance += BalanceCalculator.CalculateMonthBalance(month.items.toAdd) 
+                    totalBalancePlanning += planningMonth.balance
+                    monthsToInsert.push(planningMonth)
+                }
+                await this.planningMonthRepository.bulkInsert(monthsToInsert)
+            }
 
+            if (toUpdate.length) {
+                const monthsToUpdate: PlanningMonth[] = []
+                for (const month of toUpdate) {
+                    const { items: { toAdd: itemsToAdd, toUpdate: itemsToUpdate }} = month
+                const planningMonth = new PlanningMonth(month.idMonth, month.expectedAmount, month.spentOnDebit, month.spentOnCredit, month.totalIn, month.totalOut, true, month.id)
+                planningMonth.balance += BalanceCalculator.CalculateMonthBalance([...itemsToAdd, ...itemsToUpdate]) 
+                totalBalancePlanning += planningMonth.balance
+                monthsToUpdate.push(planningMonth)
+                }
+                await this.planningMonthRepository.bulkUpdate(monthsToUpdate)
+            }
+            
+            const planning = new Planning(input.year, input.status, input.title, input.expectedAmount, input.planningStart, input.planningStart, id)
+            planning.balance = totalBalancePlanning
+            await this.planningRepository.update(planning)
+            await this.planningRepository.commitTransaction()
+        } catch (e) {
+            await this.planningRepository.rollbackTransaction()
+            throw e
+        }   
     }
 }
 
-
-type Input = {
-    monthsToRemove: number[],
-    itemsToRemove: number[],
-    planningStart: Date,
-    planningEnd: Date,
-    title: string,
-    year: number,
-    expectedAmount: number,
-    months: {
-        toAdd: Array<[]>,
+type ToAddOrUpdateMonths = {
+    toAdd: {
         expectedAmount: number,
         idMonth: number,
         totalIn: number,
@@ -34,11 +63,51 @@ type Input = {
         spentOnCredit: number,
         spentOnDebit: number,
         items: {
-            value: number,
-            operation: "in" | "out",
-            date: Date,
-            paymentMethod: "debit" | "credit" | null,
-            description: string
-        }[]
+            toAdd: {
+                value: number,
+                operation: "in" | "out",
+                date: Date,
+                paymentMethod: "debit" | "credit" | null,
+                description: string
+            }[],
+        }
+    }[],
+    toUpdate: {
+        id: number,
+        expectedAmount: number,
+        idMonth: number,
+        totalIn: number,
+        totalOut: number,
+        spentOnCredit: number,
+        spentOnDebit: number,
+        items: {
+            toAdd: {
+                value: number,
+                operation: "in" | "out",
+                date: Date,
+                paymentMethod: "debit" | "credit" | null,
+                description: string
+            }[],
+            toUpdate: {
+                id: number,
+                value: number,
+                operation: "in" | "out",
+                date: Date,
+                paymentMethod: "debit" | "credit" | null,
+                description: string
+            }[],
+        }
     }[]
+}
+type Input = {
+    status: number,
+    id: number,
+    monthsToRemove: number[],
+    itemsToRemove: number[],
+    planningStart: Date,
+    planningEnd: Date,
+    title: string,
+    year: number,
+    expectedAmount: number,
+    months: ToAddOrUpdateMonths
 }

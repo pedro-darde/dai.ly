@@ -1,3 +1,4 @@
+import EditPlanning from "../../application/EditPlanning";
 import GetMonths from "../../application/GetMonths";
 import GetPlanning from "../../application/GetPlanning";
 import StartPlanning from "../../application/StartPlanning";
@@ -11,6 +12,7 @@ export default class PlanningController {
         readonly startPlanning: StartPlanning,
         readonly getPlanning: GetPlanning,
         readonly getMonths: GetMonths,
+        readonly editPlanning: EditPlanning,
         readonly createEditPlanningValidation: Validation
         ) {
         httpServer.on("post", "/planning", async function(params, body) {
@@ -29,6 +31,19 @@ export default class PlanningController {
             try {
                 const planning = await getPlanning.execute(params.year)
                 return ok(planning)
+            } catch (e: any) {
+                console.log(e)
+                return serverError(e)
+            }
+        })
+
+        httpServer.on("post", "planning/:id", async function (params, body) {
+            try {
+                const error = createEditPlanningValidation.validate(body)
+                if (error) return badRequest(error)
+                await editPlanning.execute(params.id, body)
+
+                return ok({ message: "Planning Edited" })
             } catch (e: any) {
                 console.log(e)
                 return serverError(e)

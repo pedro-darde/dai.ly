@@ -1,3 +1,4 @@
+import PlanningMonth from "./PlanningMonth";
 import PlanningMonthItem from "./PlanningMonthItem";
 
 export class BalanceCalculator {
@@ -11,4 +12,11 @@ export class BalanceCalculator {
             return acc;
         }, 0)
     }
+
+    static CalculatePlanningBalance(months: PlanningMonth[]) {
+        return months.reduce((acc, month) => {
+            acc += BalanceCalculator.CalculateMonthBalance(month.items)
+            return acc;
+        }, 0);
+    } 
 }

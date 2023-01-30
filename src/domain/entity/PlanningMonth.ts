@@ -1,7 +1,7 @@
 import PlanningMonthItem from "./PlanningMonthItem"
 
 export default class PlanningMonth {
-  private items: PlanningMonthItem[]
+  items: PlanningMonthItem[]
   balance = 0
   constructor(
               readonly idMonth: number, 

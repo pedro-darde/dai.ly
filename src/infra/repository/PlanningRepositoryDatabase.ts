@@ -3,9 +3,13 @@ import Planning from "../../domain/entity/Planning";
 import PlanningMonth from "../../domain/entity/PlanningMonth";
 import PlanningRepository, {  PlanningDatabase } from "../../domain/repository/PlanningRepository";
 import Connection from "../database/Connection";
+import { getSetByKeysValues, getSetForCteByKeys } from "../helpers/DbHelper";
+import BaseRepositoryDatabase from "./BaseRepositoryDatabase";
 
-export default class PlanningRepositoryDatabase implements PlanningRepository {
-    constructor(readonly connection: Connection) {}
+export default class PlanningRepositoryDatabase  extends BaseRepositoryDatabase implements PlanningRepository {
+    constructor(readonly connection: Connection) {
+        super(connection)
+    }
 
     async save(planning: Planning): Promise<void> {
         try {
@@ -66,16 +70,10 @@ export default class PlanningRepositoryDatabase implements PlanningRepository {
         } 
     }
 
-    async commitTransaction() {
-        await this.connection.query("COMMIT;", [])
-    }
-    
-    async beginTransaction() {
-        await this.connection.query("BEGIN;", [])
+    async update(planning: Planning) {
+        const keys: (keyof Planning)[] = ["balance", "expectedAmount", "startAt", "title", "endAt"] 
+        const setString = getSetByKeysValues(planning, keys)
+        await this.connection.query(`UPDATE phd.planning ${setString} WHERE id = $1`, [planning.id])
     }
 
-    async rollbackTransaction() {
-        await this.connection.query("ROLLBACK;", [])
-    }
-      
 }

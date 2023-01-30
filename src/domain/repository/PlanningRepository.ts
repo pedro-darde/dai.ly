@@ -1,4 +1,5 @@
 import Planning from "../entity/Planning";
+import BaseRepository from "./BaseRepository";
 
 
 export type PlanningDatabase = {
@@ -31,10 +32,8 @@ export type PlanningDatabase = {
         }[]
     }[]
 }
-export default interface PlanningRepository {
+export default interface PlanningRepository extends BaseRepository {
     save: (planning: Planning) => Promise<void>
-    beginTransaction: () => Promise<void>
-    commitTransaction: () => Promise<void>
-    rollbackTransaction: () => Promise<void>
     getByYear: (year:number) => Promise<Planning  | void>
+    update: (planning: Planning) => Promise<void>
 }
