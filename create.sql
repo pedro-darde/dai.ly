@@ -97,3 +97,5 @@ INSERT INTO phd.months (month_name, month_as_number) VALUES
 INSERT INTO phd.item_type (description) VALUES ('Education'), ('Invoice'), ('Salary'), ('Food'), ('Drink'), ('Party');
 
 ALTER TABLE phd.planning_month_item ADD COLUMN id_type integer not null REFERENCES phd.item_type (id);
+
+ALTER TABLE phd.planning_month_item ALTER COLUMN operation TYPE varchar;

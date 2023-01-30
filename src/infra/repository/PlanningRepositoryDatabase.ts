@@ -42,15 +42,20 @@ export default class PlanningRepositoryDatabase  extends BaseRepositoryDatabase 
     }
 
     async getByYear(year: number): Promise<Planning  | void > {
-        const data = await this.connection.query<PlanningDatabase[]>(
-        "SELECT PLANNING.*," +
-            " (SELECT JSONB_AGG(T) RES"
-        +    " FROM (SELECT PLANNING_MONTH.*, JSON_AGG(PLANNING_MONTH_ITEM.*) AS ITEMS" +
-                    " FROM PHD.PLANNING_MONTH PLANNING_MONTH" +
-                        " INNER JOIN PHD.PLANNING_MONTH_ITEM PLANNING_MONTH_ITEM ON PLANNING_MONTH_ITEM.ID_MONTH_PLANNING = PLANNING_MONTH.ID" + 
-                            " WHERE PLANNING_MONTH.ID_PLANNING = PLANNING.ID" +
-                            " GROUP BY PLANNING_MONTH.ID) T) AS MONTHS" + 
-            " FROM PHD.PLANNING PLANNING WHERE PLANNING.YEAR = $1 GROUP BY PLANNING.ID;", [year])
+        const SQL = "SELECT PLANNING.*," +
+        " (SELECT JSONB_AGG(T) RES"
+    +    " FROM (SELECT PLANNING_MONTH.*, JSON_AGG(PLANNING_MONTH_ITEM.*) AS ITEMS," +
+                    "(SELECT jsonb_agg(spents)  as spents FROM (SELECT JSON_BUILD_OBJECT('description', type.description, 'operation',  item.operation ,'value', SUM(item.value)) as expected " + 
+                        "FROM phd.item_type type " +
+                             "INNER JOIN phd.planning_month_item item ON item.id_type = type.id " +
+                             "WHERE item.id_month_planning = PLANNING_MONTH.id " +
+                    "GROUP BY item.operation, type.id) AS spents) AS types_spent " +
+                " FROM PHD.PLANNING_MONTH PLANNING_MONTH" +
+                    " INNER JOIN PHD.PLANNING_MONTH_ITEM PLANNING_MONTH_ITEM ON PLANNING_MONTH_ITEM.ID_MONTH_PLANNING = PLANNING_MONTH.ID" + 
+                        " WHERE PLANNING_MONTH.ID_PLANNING = PLANNING.ID" +
+                        " GROUP BY PLANNING_MONTH.ID) T) AS MONTHS" + 
+        " FROM PHD.PLANNING PLANNING WHERE PLANNING.YEAR = $1 GROUP BY PLANNING.ID;"
+        const data = await this.connection.query<PlanningDatabase[]>(SQL, [year])
         if (data.length) {
             const [planningDatabase] = data
             const planning = new Planning(planningDatabase.year, planningDatabase.status, planningDatabase.title, parseFloat(planningDatabase.expected_amount), planningDatabase.start_at, planningDatabase.end_at, planningDatabase.id)
@@ -58,6 +63,7 @@ export default class PlanningRepositoryDatabase  extends BaseRepositoryDatabase 
             if (planningDatabase.months?.length) {
                 for (const month of planningDatabase.months) {
                     const planningMonth = new PlanningMonth(planningDatabase.id, parseFloat(month.expected_amount),parseFloat(month.spent_on_debit), parseFloat(month.spent_on_debit), parseFloat(month.total_in), parseFloat(month.total_out), month.open ,month.id)
+                    planningMonth.typesSpent = month.types_spent.map(item => item.expected)
                     if (month.items?.length) {
                         for (const item of month.items)
                         /** @ts-ignore */

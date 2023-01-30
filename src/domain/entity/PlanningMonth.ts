@@ -1,7 +1,8 @@
 import PlanningMonthItem from "./PlanningMonthItem";
 
 export default class PlanningMonth {
-  private items: PlanningMonthItem[];
+  items: PlanningMonthItem[];
+  typesSpent: { value: number, description: string, operation: "in"| "out" } [] = [];
   balance = 0;
   constructor(
     readonly idMonth: number,

@@ -64,6 +64,7 @@ type ToAddOrUpdateMonths = {
         spentOnDebit: number,
         items: {
             toAdd: {
+                idType: number,
                 value: number,
                 operation: "in" | "out",
                 date: Date,
@@ -83,6 +84,7 @@ type ToAddOrUpdateMonths = {
         items: {
             toAdd: {
                 value: number,
+                idType: number,
                 operation: "in" | "out",
                 date: Date,
                 paymentMethod: "debit" | "credit" | null,
@@ -90,6 +92,7 @@ type ToAddOrUpdateMonths = {
             }[],
             toUpdate: {
                 id: number,
+                idType: number,
                 value: number,
                 operation: "in" | "out",
                 date: Date,
