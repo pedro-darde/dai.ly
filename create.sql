@@ -61,6 +61,13 @@ CREATE TABLE phd.planning_month(
     UNIQUE(id_month, id_planning)
 );
 
+
+CREATE table phd.item_type (
+    id SERIAL PRIMARY KEY,
+    description VARCHAR NOT NULL,
+    active BOOLEAN DEFAULT true
+);
+
 CREATE TABLE phd.planning_month_item(
     id SERIAL PRIMARY KEY,
     id_month_planning  integer not null REFERENCES phd.planning_month(id),
@@ -68,6 +75,7 @@ CREATE TABLE phd.planning_month_item(
     operation char(3) NOT NULL,
     date TIMESTAMP NOT NULL,
     description VARCHAR NOT NULL,
+    id_type integer not null REFERENCES phd.item_type (id),
     payment_method VARCHAR NULL
 );
 
@@ -84,3 +92,8 @@ INSERT INTO phd.months (month_name, month_as_number) VALUES
 ('October', 10),
 ('November', 11),
 ('December', 12);
+
+
+INSERT INTO phd.item_type (description) VALUES ('Education'), ('Invoice'), ('Salary'), ('Food'), ('Drink'), ('Party');
+
+ALTER TABLE phd.planning_month_item ADD COLUMN id_type integer not null REFERENCES phd.item_type (id);
