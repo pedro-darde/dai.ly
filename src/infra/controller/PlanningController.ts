@@ -13,11 +13,12 @@ export default class PlanningController {
         readonly getPlanning: GetPlanning,
         readonly getMonths: GetMonths,
         readonly editPlanning: EditPlanning,
-        readonly createEditPlanningValidation: Validation
+        readonly createPlanningValidation: Validation,
+        readonly editPlanningValidation: Validation
         ) {
         httpServer.on("post", "/planning", async function(params, body) {
             try {
-                const errors = createEditPlanningValidation.validate(body)
+                const errors = createPlanningValidation.validate(body)
                 if (errors) return badRequest(errors)
                 await startPlanning.execute(body)
                 return ok({ message: "Planning created" })
@@ -37,11 +38,11 @@ export default class PlanningController {
             }
         })
 
-        httpServer.on("post", "planning/:id", async function (params, body) {
+        httpServer.on("patch", "/planning/:year", async function (params, body) {
             try {
-                const error = createEditPlanningValidation.validate(body)
+                const error = editPlanningValidation.validate(body)
                 if (error) return badRequest(error)
-                await editPlanning.execute(params.id, body)
+                await editPlanning.execute(params.year, body)
 
                 return ok({ message: "Planning Edited" })
             } catch (e: any) {

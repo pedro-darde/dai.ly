@@ -28,7 +28,8 @@ export type PlanningDatabase = {
             description: string,
             operation: "in" | "out",
             date: Date,
-            payment_method: "debit" | "credit"
+            payment_method: "debit" | "credit",
+            id_type: number
         }[],
         types_spent: {
             expected: {

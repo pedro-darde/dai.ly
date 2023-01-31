@@ -99,3 +99,6 @@ INSERT INTO phd.item_type (description) VALUES ('Education'), ('Invoice'), ('Sal
 ALTER TABLE phd.planning_month_item ADD COLUMN id_type integer not null REFERENCES phd.item_type (id);
 
 ALTER TABLE phd.planning_month_item ALTER COLUMN operation TYPE varchar;
+
+
+ALTER TABLE phd.planning_month_item ALTER COLUMN date TYPE DATE;

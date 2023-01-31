@@ -14,8 +14,8 @@ export default class StartPlanning {
       PlanningStatus.ACTIVE,
       input.title,
       input.expectedAmount,
-      input.planningStart,
-      input.planningEnd
+      input.startAt,
+      input.endAt
     );
     if (input.months) {
       for (const month of input.months) {
@@ -52,8 +52,8 @@ export default class StartPlanning {
 }
 
 type InputCreate = {
-  planningStart: Date;
-  planningEnd: Date;
+  startAt: Date;
+  endAt: Date;
   title: string;
   year: number;
   expectedAmount: number;

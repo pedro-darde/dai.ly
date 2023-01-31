@@ -67,7 +67,7 @@ export default class PlanningRepositoryDatabase  extends BaseRepositoryDatabase 
                     if (month.items?.length) {
                         for (const item of month.items)
                         /** @ts-ignore */
-                        planningMonth.addItem(parseFloat(item.value), item.operation.trim(), item.date, item.description, item.payment_method,  item.id)
+                        planningMonth.addItem(parseFloat(item.value), item.operation.trim(), item.date, item.description, item.id_type, item.payment_method,  item.id)
                     }
                     planning.addMonth(planningMonth)
                 }
@@ -77,9 +77,16 @@ export default class PlanningRepositoryDatabase  extends BaseRepositoryDatabase 
     }
 
     async update(planning: Planning) {
-        const keys: (keyof Planning)[] = ["balance", "expectedAmount", "startAt", "title", "endAt"] 
-        const setString = getSetByKeysValues(planning, keys)
-        await this.connection.query(`UPDATE phd.planning ${setString} WHERE id = $1`, [planning.id])
+        const mapDBKeys: any = {
+            "balance": "balance",
+            "expectedAmount": "expected_amount",
+            "startAt": "start_at",
+            "title": "title",
+            "endAt" : "end_at"
+        }
+        const keys: (keyof Planning)[] = ["balance", "expectedAmount", "startAt", "title"] 
+        const setString = getSetByKeysValues(planning, keys.map(key => ({ dbKey: mapDBKeys[key], itemKey: key})))
+        await this.connection.query(`UPDATE phd.planning SET ${setString} WHERE year = $1`, [planning.year])
     }
 
 }

@@ -12,7 +12,7 @@ export default class EditPlanning {
         readonly planningMonthRepository: PlanningMonthRepository, 
         readonly planningMonthItemRepository: PlanningMonthItemRepository
     ) {}
-    async execute(id: number, input: Input): Promise<void> {
+    async execute(year: number, input: Input): Promise<void> {
         try {
             await this.planningRepository.beginTransaction()
             if (input.itemsToRemove.length) await this.planningMonthItemRepository.bulkDelete(input.itemsToRemove)
@@ -27,6 +27,7 @@ export default class EditPlanning {
                     planningMonth.balance += BalanceCalculator.CalculateMonthBalance(month.items.toAdd) 
                     totalBalancePlanning += planningMonth.balance
                     monthsToInsert.push(planningMonth)
+                    if (month.items.toAdd.length) await this.planningMonthItemRepository.bulkInsert(month.items.toAdd)
                 }
                 await this.planningMonthRepository.bulkInsert(monthsToInsert)
             }
@@ -35,15 +36,17 @@ export default class EditPlanning {
                 const monthsToUpdate: PlanningMonth[] = []
                 for (const month of toUpdate) {
                     const { items: { toAdd: itemsToAdd, toUpdate: itemsToUpdate }} = month
-                const planningMonth = new PlanningMonth(month.idMonth, month.expectedAmount, month.spentOnDebit, month.spentOnCredit, month.totalIn, month.totalOut, true, month.id)
-                planningMonth.balance += BalanceCalculator.CalculateMonthBalance([...itemsToAdd, ...itemsToUpdate]) 
-                totalBalancePlanning += planningMonth.balance
-                monthsToUpdate.push(planningMonth)
+                    const planningMonth = new PlanningMonth(month.idMonth, month.expectedAmount, month.spentOnDebit, month.spentOnCredit, month.totalIn, month.totalOut, true, month.id)
+                    planningMonth.balance += BalanceCalculator.CalculateMonthBalance([...itemsToAdd, ...itemsToUpdate]) 
+                    totalBalancePlanning += planningMonth.balance
+                    monthsToUpdate.push(planningMonth)
+                    if (itemsToUpdate.length) await this.planningMonthItemRepository.bulkUpdate(itemsToUpdate)
+                    if (itemsToAdd.length) await this.planningMonthItemRepository.bulkInsert(itemsToAdd)
                 }
                 await this.planningMonthRepository.bulkUpdate(monthsToUpdate)
             }
             
-            const planning = new Planning(input.year, input.status, input.title, input.expectedAmount, input.planningStart, input.planningStart, id)
+            const planning = new Planning(input.year, input.status, input.title, input.expectedAmount, input.startAt, input.endAt)
             planning.balance = totalBalancePlanning
             await this.planningRepository.update(planning)
             await this.planningRepository.commitTransaction()
@@ -107,8 +110,8 @@ type Input = {
     id: number,
     monthsToRemove: number[],
     itemsToRemove: number[],
-    planningStart: Date,
-    planningEnd: Date,
+    startAt: Date,
+    endAt: Date,
     title: string,
     year: number,
     expectedAmount: number,
