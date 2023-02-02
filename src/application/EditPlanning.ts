@@ -46,7 +46,7 @@ export default class EditPlanning {
                 await this.planningMonthRepository.bulkUpdate(monthsToUpdate)
             }
             
-            const planning = new Planning(input.year, input.status, input.title, input.expectedAmount, input.startAt, input.endAt)
+            const planning = new Planning(year, input.status, input.title, input.expectedAmount, input.startAt, input.endAt)
             planning.balance = totalBalancePlanning
             await this.planningRepository.update(planning)
             await this.planningRepository.commitTransaction()
