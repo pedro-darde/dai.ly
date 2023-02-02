@@ -101,6 +101,7 @@ ALTER TABLE phd.planning_month_item ALTER COLUMN date TYPE DATE;
 
 CREATE TABLE phd.card (
     id SERIAL PRIMARY KEY,
+    name VARCHAR NOT NULL,
     owner_name varchar not null,
     number varchar not null,
     flag varchar not null,

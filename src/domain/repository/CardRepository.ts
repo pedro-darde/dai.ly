@@ -1,8 +1,8 @@
 import Card from "../entity/Card";
 
 export default interface CardRepository {
-    create (data: Omit<Card, "id">): Promise<void>
-    list (): Promise<void>
+    create (data: Card): Promise<void>
+    list (): Promise<Card[]>
 }
 
 
