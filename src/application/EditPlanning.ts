@@ -1,7 +1,7 @@
 import { BalanceCalculator } from "../domain/entity/BalanceCalculator"
 import Planning from "../domain/entity/Planning"
 import PlanningMonth from "../domain/entity/PlanningMonth"
-import BaseRepository from "../domain/repository/BaseRepository"
+import PlanningMonthItem from "../domain/entity/PlanningMonthItem"
 import PlanningMonthItemRepository from "../domain/repository/PlanningMonthItemRepository"
 import PlanningMonthRepository from "../domain/repository/PlanningMonthRepository"
 import PlanningRepository from "../domain/repository/PlanningRepository"
@@ -21,29 +21,32 @@ export default class EditPlanning {
             const { toAdd, toUpdate } = input.months
             
             if (toAdd.length) {
-                const monthsToInsert: PlanningMonth[] = []
                 for (const month of toAdd) {
-                    const planningMonth = new PlanningMonth(month.idMonth, month.expectedAmount, month.spentOnDebit, month.spentOnCredit, month.totalIn, month.totalOut, true)
+                    const planningMonth = new PlanningMonth(month.idMonth, month.expectedAmount, month.spentOnDebit, month.spentOnCredit, month.totalIn, month.totalOut, input.id ,true)
                     planningMonth.balance += BalanceCalculator.CalculateMonthBalance(month.items.toAdd) 
                     totalBalancePlanning += planningMonth.balance
-                    monthsToInsert.push(planningMonth)
-                    if (month.items.toAdd.length) await this.planningMonthItemRepository.bulkInsert(month.items.toAdd)
+                    const idPlanningMonth = await this.planningMonthRepository.create(planningMonth)
+                    if (month.items.toAdd.length) { 
+                        const monthItems: PlanningMonthItem[] = month.items.toAdd.map(item => ({
+                            ...item,
+                            idPlanningMonth: +idPlanningMonth
+                        }))
+                        await this.planningMonthItemRepository.bulkInsert(monthItems)
+                    }
                 }
-                await this.planningMonthRepository.bulkInsert(monthsToInsert)
+                
             }
 
             if (toUpdate.length) {
-                const monthsToUpdate: PlanningMonth[] = []
                 for (const month of toUpdate) {
                     const { items: { toAdd: itemsToAdd, toUpdate: itemsToUpdate }} = month
-                    const planningMonth = new PlanningMonth(month.idMonth, month.expectedAmount, month.spentOnDebit, month.spentOnCredit, month.totalIn, month.totalOut, true, month.id)
+                    const planningMonth = new PlanningMonth(month.idMonth, month.expectedAmount, month.spentOnDebit, month.spentOnCredit, month.totalIn, month.totalOut, input.id, true, month.id)
                     planningMonth.balance += BalanceCalculator.CalculateMonthBalance([...itemsToAdd, ...itemsToUpdate]) 
                     totalBalancePlanning += planningMonth.balance
-                    monthsToUpdate.push(planningMonth)
+                    await this.planningMonthRepository.edit(planningMonth.id!, planningMonth)
                     if (itemsToUpdate.length) await this.planningMonthItemRepository.bulkUpdate(itemsToUpdate)
                     if (itemsToAdd.length) await this.planningMonthItemRepository.bulkInsert(itemsToAdd)
                 }
-                await this.planningMonthRepository.bulkUpdate(monthsToUpdate)
             }
             
             const planning = new Planning(year, input.status, input.title, input.expectedAmount, input.startAt, input.endAt)
@@ -72,7 +75,8 @@ type ToAddOrUpdateMonths = {
                 operation: "in" | "out",
                 date: Date,
                 paymentMethod: "debit" | "credit" | null,
-                description: string
+                description: string,
+                idCard?: number
             }[],
         }
     }[],
@@ -86,6 +90,7 @@ type ToAddOrUpdateMonths = {
         spentOnDebit: number,
         items: {
             toAdd: {
+                idPlanningMonth: number,
                 value: number,
                 idType: number,
                 operation: "in" | "out",
@@ -94,13 +99,15 @@ type ToAddOrUpdateMonths = {
                 description: string
             }[],
             toUpdate: {
+                idPlanningMonth: number,
                 id: number,
                 idType: number,
                 value: number,
                 operation: "in" | "out",
                 date: Date,
                 paymentMethod: "debit" | "credit" | null,
-                description: string
+                description: string,
+                idCard?: number
             }[],
         }
     }[]

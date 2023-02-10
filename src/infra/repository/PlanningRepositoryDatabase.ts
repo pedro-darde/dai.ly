@@ -1,6 +1,7 @@
 import { pl } from "date-fns/locale";
 import Planning from "../../domain/entity/Planning";
 import PlanningMonth from "../../domain/entity/PlanningMonth";
+import PlanningMonthItem from "../../domain/entity/PlanningMonthItem";
 import PlanningRepository, {  PlanningDatabase } from "../../domain/repository/PlanningRepository";
 import Connection from "../database/Connection";
 import { getSetByKeysValues, getSetForCteByKeys } from "../helpers/DbHelper";
@@ -29,7 +30,7 @@ export default class PlanningRepositoryDatabase  extends BaseRepositoryDatabase 
                 const [{ id: idMonthPlanning }] = await this.connection.query<[{id: number}]>("INSERT INTO phd.planning_month (id_month, id_planning, balance, expected_amount, total_in, total_out, spent_on_debit, spent_on_credit) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) returning id", [month.idMonth, idPlanning,  month.balance, month.expectedAmount, month.totalIn, month.totalOut, month.spentOnDebit, month.spentOnCredit])
                 if (month.getItens().length) {
                     for (const monthItem of month.getItens()) {
-                        await this.connection.query("INSERT INTO phd.planning_month_item (id_month_planning, value, description, idType ,operation, date, payment_method) VALUES ($1, $2, $3, $4, $5, $6, $7)", [idMonthPlanning, monthItem.value, monthItem.description, monthItem.idType, monthItem.operation, monthItem.date, monthItem.paymentMethod])
+                        await this.connection.query("INSERT INTO phd.planning_month_item (id_month_planning, value, description, id_type , id_card, operation, date, payment_method) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", [idMonthPlanning, monthItem.value, monthItem.description, monthItem.idType, monthItem.idCard, monthItem.operation, monthItem.date, monthItem.paymentMethod])
                     }
                 }
             }
@@ -55,6 +56,7 @@ export default class PlanningRepositoryDatabase  extends BaseRepositoryDatabase 
                         " WHERE PLANNING_MONTH.ID_PLANNING = PLANNING.ID" +
                         " GROUP BY PLANNING_MONTH.ID) T) AS MONTHS" + 
         " FROM PHD.PLANNING PLANNING WHERE PLANNING.YEAR = $1 GROUP BY PLANNING.ID;"
+
         const data = await this.connection.query<PlanningDatabase[]>(SQL, [year])
         if (data.length) {
             const [planningDatabase] = data
@@ -62,12 +64,11 @@ export default class PlanningRepositoryDatabase  extends BaseRepositoryDatabase 
             
             if (planningDatabase.months?.length) {
                 for (const month of planningDatabase.months) {
-                    const planningMonth = new PlanningMonth(planningDatabase.id, parseFloat(month.expected_amount),parseFloat(month.spent_on_debit), parseFloat(month.spent_on_debit), parseFloat(month.total_in), parseFloat(month.total_out), month.open ,month.id)
+                    const planningMonth = new PlanningMonth(planningDatabase.id, parseFloat(month.expected_amount),parseFloat(month.spent_on_debit), parseFloat(month.spent_on_debit), parseFloat(month.total_in), parseFloat(month.total_out),  planning.id!, month.open ,month.id)
                     planningMonth.typesSpent = month.types_spent.map(item => item.expected)
                     if (month.items?.length) {
                         for (const item of month.items)
-                        /** @ts-ignore */
-                        planningMonth.addItem(parseFloat(item.value), item.operation.trim(), item.date, item.description, item.id_type, item.payment_method,  item.id)
+                        planningMonth.addItem(new PlanningMonthItem(parseFloat(item.value), item.operation, item.date, item.description, item.id_type, item.id_month_planning, item.id_card,item.payment_method,  item.id))
                     }
                     planning.addMonth(planningMonth)
                 }

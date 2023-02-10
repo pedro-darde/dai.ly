@@ -1,3 +1,4 @@
+import { CreditCardValidation } from "../../../validators/CreditCardValidation";
 import { RequiredFieldValidation } from "../../../validators/RequiredFieldValidation";
 import { ValidationComposite } from "../../../validators/ValidationComposite";
 
@@ -8,7 +9,8 @@ export const makeAddCardValidation = (): ValidationComposite => {
         "number", 
         "type", 
         "flag", 
-        "validateDate"
+        "validateDate",
+        "cvv"
     ].map(field => new RequiredFieldValidation(field))
-    return new ValidationComposite(validations)
+    return new ValidationComposite([...validations, new CreditCardValidation()])
 }

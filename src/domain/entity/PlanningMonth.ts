@@ -11,32 +11,15 @@ export default class PlanningMonth {
     readonly spentOnCredit: number,
     readonly totalIn: number,
     readonly totalOut: number,
+    readonly idPlanning?: number,
     readonly open: boolean = true,
     readonly id?: number
   ) {
     this.items = [];
   }
 
-  addItem(
-    value: number,
-    operation: "in" | "out",
-    date: Date,
-    description: string,
-    idType: number,
-    paymentMethod: "credit" | "debit" | null,
-    id?: number
-  ) {
-    this.items.push(
-      new PlanningMonthItem(
-        value,
-        operation,
-        date,
-        description,
-        idType,
-        paymentMethod,
-        id
-      )
-    );
+  addItem(item:PlanningMonthItem) {
+    this.items.push(item);
   }
 
   getItens() {

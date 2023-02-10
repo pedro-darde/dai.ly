@@ -23,11 +23,12 @@ export type PlanningDatabase = {
         open: boolean,
         items: {
             id: number,
-            id_planning_month: number,
+            id_month_planning: number,
             value: string,
             description: string,
             operation: "in" | "out",
             date: Date,
+            id_card?: number,
             payment_method: "debit" | "credit",
             id_type: number
         }[],

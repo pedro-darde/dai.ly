@@ -1,6 +1,7 @@
 import { BalanceCalculator } from "../domain/entity/BalanceCalculator";
 import Planning from "../domain/entity/Planning";
 import PlanningMonth from "../domain/entity/PlanningMonth";
+import PlanningMonthItem from "../domain/entity/PlanningMonthItem";
 import { PlanningStatus } from "../domain/entity/PlanningStatus";
 import PlanningRepository from "../domain/repository/PlanningRepository";
 
@@ -25,18 +26,21 @@ export default class StartPlanning {
           month.spentOnDebit,
           month.spentOnCredit,
           month.totalIn,
-          month.totalOut
+          month.totalOut,
+          
         );
         if (month.items) {
           for (const item of month.items) {
-            planningMonth.addItem(
+            planningMonth.addItem(new PlanningMonthItem(
               item.value,
               item.operation,
               item.date,
               item.description,
               item.idType,
+              item.idCard,
+              undefined,
               item.paymentMethod
-            );
+            ));
           }
         }
         planningMonth.balance = BalanceCalculator.CalculateMonthBalance(
@@ -71,6 +75,7 @@ type InputCreate = {
       paymentMethod: "debit" | "credit" | null;
       description: string;
       idType: number;
+      idCard: number
     }[];
   }[];
 };

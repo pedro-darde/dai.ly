@@ -7,8 +7,9 @@ export default interface CardRepository {
 
 
 export type CardOnDB = {
+    cvv: string,
     id: number,
-    card_name: string,
+    name: string,
     owner_name: string,
     number: string,
     flag: string,

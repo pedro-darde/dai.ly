@@ -6,7 +6,7 @@ export default class Card {
     readonly flag: string,
     readonly type: "debit" | "credit" | "debit&credit",
     readonly validateDate: string,
-    readonly creditLimit?: number,
+    readonly cvv: string,
     readonly id?: number
   ) {}
 }

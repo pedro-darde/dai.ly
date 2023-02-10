@@ -107,8 +107,10 @@ CREATE TABLE phd.card (
     flag varchar not null,
     type varchar not null,
     validateDate varchar not null,
-    credit_limit numeric(10,2) null
+    credit_limit numeric(10,2) null,
+    cvv varchar not null
 );
 
-
+ALTER table phd.card add column name varchar not null;
+ALTER table phd.card add column cvv varchar not null;
 ALTER TABLE phd.planning_month_item ADD COLUMN id_card integer null REFERENCES phd.card(id);
