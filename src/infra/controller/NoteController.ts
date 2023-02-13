@@ -26,7 +26,7 @@ export default class RestController {
         });
         server.on("post", "/note", async function (params: any, body: any) {
             try {
-                const validateErr = requiredDescription.validate(body);
+                const validateErr = await requiredDescription.validate(body);
                 if (validateErr) return badRequest(validateErr);
                 const id = await noteService.create(body, !!body.tasks?.length);
                 if (id) {
@@ -50,7 +50,7 @@ export default class RestController {
             "/changeFix/:idNote",
             async function (params: any, body: any) {
                 try {
-                    const error = fixNoteValidation.validate(body);
+                    const error = await fixNoteValidation.validate(body);
                     if (error) return badRequest(error);
                     const exists = await noteService.getNote(params.idNote);
                     if (!exists)
@@ -80,7 +80,7 @@ export default class RestController {
         );
         server.on("patch", "/note/:idNote", async function (params: any, body: any) {
             try {
-                const error = requiredDescription.validate(body);
+                const error = await requiredDescription.validate(body);
                 if (error) return badRequest(error);
                 await noteService.updateNote(body, params.idNote);
                 if (body.tasksToRemove?.length) await noteTaskService.removeByNoteAndTasks(params.idNote, body.tasksToRemove)

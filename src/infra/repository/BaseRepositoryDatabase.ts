@@ -1,21 +1,22 @@
-import BaseRepository from "../../domain/repository/BaseRepository"
-import Connection from "../database/Connection"
+import BaseRepository from "../../domain/repository/BaseRepository";
+import Connection from "../database/Connection";
 
 export default abstract class BaseRepositoryDatabase implements BaseRepository {
-    connection: Connection
-    constructor (connection: Connection) {
-        this.connection = connection
-    }
+  connection: Connection;
+  constructor(connection: Connection) {
+    this.connection = connection;
+  }
 
-    async commitTransaction() {
-        await this.connection.query("COMMIT;", [])
-    }
-    
-    async beginTransaction() {
-        await this.connection.query("BEGIN;", [])
-    }
+  async commitTransaction() {
+    await this.connection.query("COMMIT;", []);
+  }
 
-    async rollbackTransaction() {
-        await this.connection.query("ROLLBACK;", [])
-    }
+  async beginTransaction() {
+    await this.connection.query("BEGIN;", []);
+  }
+
+  async rollbackTransaction() {
+    await this.connection.query("ROLLBACK;", []);
+  }
+  abstract findByUniqueKey(uniqueKey: any, value: any): Promise<any>;
 }

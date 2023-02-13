@@ -22,7 +22,7 @@ export default class CardController {
     });
     server.on("post", "/card", async function (params, body) {
       try {
-        const notOk = createValidation.validate(body);
+        const notOk = await createValidation.validate(body);
         if (notOk) return badRequest(notOk);
         await addCard.execute(body)
         return ok({ message: "Card created" })

@@ -8,6 +8,9 @@ import { getSetByKeysValues, getSetForCteByKeys } from "../helpers/DbHelper";
 import BaseRepositoryDatabase from "./BaseRepositoryDatabase";
 
 export default class PlanningRepositoryDatabase  extends BaseRepositoryDatabase implements PlanningRepository {
+    findByUniqueKey(uniqueKey: any): Promise<any> {
+        throw new Error("Method not implemented.");
+    }
     constructor(readonly connection: Connection) {
         super(connection)
     }

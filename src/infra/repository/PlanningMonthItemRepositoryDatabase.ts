@@ -5,6 +5,9 @@ import { ArrangeOfSet, getObjectArrayAsString, getSetForCteByKeys } from "../hel
 import BaseRepositoryDatabase from "./BaseRepositoryDatabase";
 
 export default class PlanningMonthItemRepositoryDatabase extends BaseRepositoryDatabase implements PlanningMonthItemRepository {
+    findByUniqueKey(uniqueKey: any): Promise<any> {
+        throw new Error("Method not implemented.");
+    }
     private mabDBKeysByModelProps: {[key in keyof (PlanningMonthItem)]: string} = {
         "date" : "date",
         "description": "description",

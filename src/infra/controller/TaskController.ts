@@ -13,7 +13,7 @@ export default class TaskController {
   ) {
     server.on("post", "/task", async function (params, body) {
       try {
-        const error = createEditValidation.validate(body);
+        const error = await createEditValidation.validate(body);
         if (error) return badRequest(error);
         await taskService.create(body);
         return ok({ message: "Task created" });
@@ -44,7 +44,7 @@ export default class TaskController {
 
     server.on("patch", "/task/:idTask", async function (params, body) {
       try {
-        const error = createEditValidation.validate(body)
+        const error = await createEditValidation.validate(body)
         if(error) return badRequest(error)
         await taskService.update(params.idTask, body)
         return ok({ message: "Task updated"})

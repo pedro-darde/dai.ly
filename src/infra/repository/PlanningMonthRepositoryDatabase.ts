@@ -36,4 +36,7 @@ export default class PlanningMonthRepositoryDatabase extends BaseRepositoryDatab
         const [{ id }] = await this.connection.query<[{id: number}]>(`INSERT INTO phd.planning_month (${keys.map(({ dbKey }: any) => dbKey)}) VALUES ${VALUES} RETURNING id`, [])
         return id
     };
+    async findByUniqueKey (uniqueKey: any): Promise<any> {
+        
+    }
 }

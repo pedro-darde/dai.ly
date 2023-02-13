@@ -1,3 +1,3 @@
 export interface Validation {
-  validate: (input: any, ...extraProps: any) => Error | void;
+  validate: (input: any, ...extraProps: any) => Promise<Error | void>;
 }

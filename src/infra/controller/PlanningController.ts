@@ -18,7 +18,7 @@ export default class PlanningController {
         ) {
         httpServer.on("post", "/planning", async function(params, body) {
             try {
-                const errors = createPlanningValidation.validate(body)
+                const errors = await createPlanningValidation.validate(body)
                 if (errors) return badRequest(errors)
                 await startPlanning.execute(body)
                 return ok({ message: "Planning created" })
@@ -40,7 +40,7 @@ export default class PlanningController {
 
         httpServer.on("patch", "/planning/:year", async function (params, body) {
             try {
-                const error = editPlanningValidation.validate(body)
+                const error = await editPlanningValidation.validate(body)
                 if (error) return badRequest(error)
                 await editPlanning.execute(params.year, body)
 

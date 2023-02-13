@@ -1,6 +1,7 @@
 import Card from "../entity/Card";
+import BaseRepository from "./BaseRepository";
 
-export default interface CardRepository {
+export default interface CardRepository extends BaseRepository {
     create (data: Card): Promise<void>
     list (): Promise<Card[]>
 }
@@ -14,6 +15,6 @@ export type CardOnDB = {
     number: string,
     flag: string,
     type: "debit" | "credit" | "debit&credit",  
-    validateDate: string,
+    validatedate: string,
     credit_limit: number
 }
