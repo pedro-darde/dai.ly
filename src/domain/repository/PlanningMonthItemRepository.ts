@@ -6,3 +6,4 @@ export default interface PlanningMonthItemRepository extends BaseRepository {
     bulkInsert: (items: PlanningMonthItem[]) => Promise<void>
     bulkUpdate: (items: PlanningMonthItem[]) => Promise<void>
 }
+

@@ -1,6 +1,7 @@
 import Card from "../../domain/entity/Card";
 import CardRepository, {
   CardOnDB,
+  CardWithTransaction,
 } from "../../domain/repository/CardRepository";
 import Connection from "../database/Connection";
 import BaseRepositoryDatabase from "./BaseRepositoryDatabase";
@@ -28,25 +29,28 @@ export default class CardRepositoryDatabase
     );
   }
 
-  async list(): Promise<Card[]> {
+  async list(): Promise<CardWithTransaction[]> {
     const data = await this.connection.query<CardOnDB[]>(
-      "SELECT * FROM phd.card",
-      []
-    );
-    console.log(data);
-    return data.map(
-      (item) =>
-        new Card(
-          item.name,
-          item.owner_name,
-          item.number,
-          item.flag,
-          item.type,
-          item.validatedate,
-          item.cvv,
-          item.id
-        )
-    );
+      "SELECT card.*, " +
+      "COALESCE(JSONB_AGG((SELECT ROW_TO_JSON(vd) " +
+                          " FROM (SELECT item.value, item.description, item.operation) AS vd)) " +
+               " FILTER (WHERE item.value IS NOT NULL), '[]') AS transactions " +
+" FROM phd.card card " +
+        "LEFT JOIN phd.planning_month_item item ON item.id_card = card.id " +
+"GROUP BY card.id",[]);
+    return data.map((item) => ({
+      ...new Card(
+        item.name,
+        item.owner_name,
+        item.number,
+        item.flag,
+        item.type,
+        item.validatedate,
+        item.cvv,
+        item.id
+      ),
+      transactions: item.transactions,
+    }));
   }
 
   async findByUniqueKey(keyValue: any, pkValue: any): Promise<any> {

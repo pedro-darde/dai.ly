@@ -3,7 +3,7 @@ import BaseRepository from "./BaseRepository";
 
 export default interface CardRepository extends BaseRepository {
     create (data: Card): Promise<void>
-    list (): Promise<Card[]>
+    list (): Promise<CardWithTransaction[]>
 }
 
 
@@ -16,5 +16,16 @@ export type CardOnDB = {
     flag: string,
     type: "debit" | "credit" | "debit&credit",  
     validatedate: string,
-    credit_limit: number
+    credit_limit: number,
+    transactions: Transaction[]
+}
+
+export type CardWithTransaction = Card & {
+    transactions: Transaction[]
+}
+
+export type Transaction = {
+    value: number, 
+    operation: string, 
+    description: string
 }

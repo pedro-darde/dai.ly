@@ -29,8 +29,6 @@ export default class DateFnsAdapter implements DateHandler {
             minutes: "differenceInMinutes"
         }
         /** @ts-ignore- */
-        console.log(this[mapMethodsNames[returnAs]](firstDate, secondDate))
-        /** @ts-ignore- */
         return this[mapMethodsNames[returnAs]](firstDate, secondDate);
     }
 
