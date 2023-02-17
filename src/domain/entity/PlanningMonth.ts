@@ -2,7 +2,7 @@ import PlanningMonthItem from "./PlanningMonthItem";
 
 export default class PlanningMonth {
   items: PlanningMonthItem[];
-  typesSpent: { value: number, description: string, operation: "in"| "out" } [] = [];
+  typesSpent: { value: number, description: string, operation: "in"| "out", type?: number } [] = [];
   balance = 0;
   constructor(
     readonly idMonth: number,

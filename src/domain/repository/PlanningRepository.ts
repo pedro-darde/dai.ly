@@ -36,7 +36,8 @@ export type PlanningDatabase = {
             expected: {
                 value: number,
                 description: string,
-                operation: "in" | "out"
+                operation: "in" | "out",
+                type: number
             }
         }[]
     }[]

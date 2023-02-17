@@ -49,7 +49,7 @@ export default class PlanningRepositoryDatabase  extends BaseRepositoryDatabase 
         const SQL = "SELECT PLANNING.*," +
         " (SELECT JSONB_AGG(T) RES"
     +    " FROM (SELECT PLANNING_MONTH.*, JSON_AGG(PLANNING_MONTH_ITEM.*) AS ITEMS," +
-                    "(SELECT jsonb_agg(spents)  as spents FROM (SELECT JSON_BUILD_OBJECT('description', type.description, 'operation',  item.operation ,'value', SUM(item.value)) as expected " + 
+                    "(SELECT jsonb_agg(spents)  as spents FROM (SELECT JSON_BUILD_OBJECT('description', type.description, 'operation',  item.operation ,'value', SUM(item.value), 'type', type.id) as expected " + 
                         "FROM phd.item_type type " +
                              "INNER JOIN phd.planning_month_item item ON item.id_type = type.id " +
                              "WHERE item.id_month_planning = PLANNING_MONTH.id " +
