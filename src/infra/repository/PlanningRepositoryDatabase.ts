@@ -28,6 +28,7 @@ export default class PlanningRepositoryDatabase  extends BaseRepositoryDatabase 
                 planning.startAt,
                 planning.endAt
             ])
+        console.log(idPlanning)
         if (planning.getMonths().length) {
             for (const month of planning.getMonths()) {
                 const [{ id: idMonthPlanning }] = await this.connection.query<[{id: number}]>("INSERT INTO phd.planning_month (id_month, id_planning, balance, expected_amount, total_in, total_out, spent_on_debit, spent_on_credit) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) returning id", [month.idMonth, idPlanning,  month.balance, month.expectedAmount, month.totalIn, month.totalOut, month.spentOnDebit, month.spentOnCredit])
