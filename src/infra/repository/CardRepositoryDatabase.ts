@@ -32,12 +32,14 @@ export default class CardRepositoryDatabase
   async list(): Promise<CardWithTransaction[]> {
     const data = await this.connection.query<CardOnDB[]>(
       "SELECT card.*, " +
-      "COALESCE(JSONB_AGG((SELECT ROW_TO_JSON(vd) " +
-                          " FROM (SELECT item.value, item.description, item.operation) AS vd)) " +
-               " FILTER (WHERE item.value IS NOT NULL), '[]') AS transactions " +
-" FROM phd.card card " +
+        "COALESCE(JSONB_AGG((SELECT ROW_TO_JSON(vd) " +
+        " FROM (SELECT item.value, item.description, item.operation) AS vd)) " +
+        " FILTER (WHERE item.value IS NOT NULL), '[]') AS transactions " +
+        " FROM phd.card card " +
         "LEFT JOIN phd.planning_month_item item ON item.id_card = card.id " +
-"GROUP BY card.id",[]);
+        "GROUP BY card.id",
+      []
+    );
     return data.map((item) => ({
       ...new Card(
         item.name,
@@ -60,5 +62,29 @@ export default class CardRepositoryDatabase
     );
 
     return data;
+  }
+
+  async spentOnCredit(): Promise<any[]> {
+    return await this.connection.query<any[]>(
+      `SELECT card.name, SUM(item.value), array_agg(concat (item.description, ': ', item.value)) items_descs
+                                                    FROM phd.planning_month_item item
+                                                              INNER JOIN phd.card card ON card.id = item.id_card
+                                                    WHERE item.operation = $1
+                                                    and item.payment_method = $2
+                                                    GROUP BY card.id`,
+      ["out", "credit"]
+    );
+  }
+
+  async spentOnDebit(): Promise<any[]> {
+    return await this.connection.query<any[]>(
+      `SELECT card.name, SUM(item.value), array_agg(concat (item.description, ': ', item.value)) items_descs
+                                                   FROM phd.planning_month_item item
+                                                             INNER JOIN phd.card card ON card.id = item.id_card
+                                                   WHERE item.operation = $1
+                                                   and item.payment_method = $2
+                                                   GROUP BY card.id`,
+      ["out", "debit"]
+    );
   }
 }

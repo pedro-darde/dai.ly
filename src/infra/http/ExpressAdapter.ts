@@ -1,3 +1,5 @@
+import * as dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import HttpServer, { HttpMethods } from "./HttpServer";
 import cors from "cors";
@@ -14,7 +16,11 @@ export default class ExpressAdapter implements HttpServer {
     this.app.listen(port);
   }
 
-  on(method: HttpMethods, url: string, callback: (params: any, body: any) => Promise<HttpResponse>): void {
+  on(
+    method: HttpMethods,
+    url: string,
+    callback: (params: any, body: any) => Promise<HttpResponse>
+  ): void {
     this.app[method](url, async (req, res) => {
       const output = await callback(req.params, req.body);
       res.status(output.statusCode).json(output.body);

@@ -2,30 +2,31 @@ import Card from "../entity/Card";
 import BaseRepository from "./BaseRepository";
 
 export default interface CardRepository extends BaseRepository {
-    create (data: Card): Promise<void>
-    list (): Promise<CardWithTransaction[]>
+  create(data: Card): Promise<void>;
+  list(): Promise<CardWithTransaction[]>;
+  spentOnCredit(): Promise<any[]>;
+  spentOnDebit(): Promise<any[]>;
 }
-
 
 export type CardOnDB = {
-    cvv: string,
-    id: number,
-    name: string,
-    owner_name: string,
-    number: string,
-    flag: string,
-    type: "debit" | "credit" | "debit&credit",  
-    validatedate: string,
-    credit_limit: number,
-    transactions: Transaction[]
-}
+  cvv: string;
+  id: number;
+  name: string;
+  owner_name: string;
+  number: string;
+  flag: string;
+  type: "debit" | "credit" | "debit&credit";
+  validatedate: string;
+  credit_limit: number;
+  transactions: Transaction[];
+};
 
 export type CardWithTransaction = Card & {
-    transactions: Transaction[]
-}
+  transactions: Transaction[];
+};
 
 export type Transaction = {
-    value: number, 
-    operation: string, 
-    description: string
-}
+  value: number;
+  operation: string;
+  description: string;
+};

@@ -1,4 +1,3 @@
-
 import PgPromiseAdapter from "./infra/database/PgPromiseAdapter";
 import { makeServer } from "./main/factory/app/server";
 import { makeTaskController } from "./main/factory/controller/Task";
@@ -9,10 +8,12 @@ import { makeCardController } from "./main/factory/controller/Card";
 import { makeDashboardController } from "./main/factory/controller/Dashboard";
 const connection = new PgPromiseAdapter();
 const expressServer = makeServer();
-makeTaskController(expressServer, connection)
-makeNoteController(expressServer, connection )
-makePlanningController(expressServer, connection)
-makeItemTypeController(expressServer, connection)
-makeCardController(expressServer, connection)
-makeDashboardController(expressServer, connection)
-expressServer.listen(3335);
+makeTaskController(expressServer, connection);
+makeNoteController(expressServer, connection);
+makePlanningController(expressServer, connection);
+makeItemTypeController(expressServer, connection);
+makeCardController(expressServer, connection);
+makeDashboardController(expressServer, connection);
+expressServer.listen(
+  process.env.API_PORT ? parseInt(process.env.API_PORT) : 8080
+);
