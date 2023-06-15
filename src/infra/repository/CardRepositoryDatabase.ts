@@ -11,7 +11,7 @@ export default class CardRepositoryDatabase
   implements CardRepository
 {
   constructor(readonly connection: Connection) {
-    super(connection);
+    super(connection, "card");
   }
 
   async create(card: Card): Promise<void> {

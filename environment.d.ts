@@ -7,6 +7,7 @@ declare global {
       DB_PORT: string;
       DB_HOST: string;
       API_PORT: string;
+      ENV: "development" | "staging" | "production";
     }
   }
 }

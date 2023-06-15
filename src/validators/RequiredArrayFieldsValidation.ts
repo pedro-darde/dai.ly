@@ -47,7 +47,7 @@ export default class RequiredArrayFieldsValidation implements Validation {
           return new MismatchTypeError(
             field,
             type,
-            typeof item[field],
+            this.extractType(item[field]),
             extraMessage
           );
         }
@@ -62,5 +62,11 @@ export default class RequiredArrayFieldsValidation implements Validation {
       }
       count++;
     }
+  }
+  private extractType(value: any): string {
+    if (value === undefined || value === null) {
+      return "undefined or null";
+    }
+    return typeof value;
   }
 }

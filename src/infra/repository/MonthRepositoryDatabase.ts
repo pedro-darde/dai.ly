@@ -40,15 +40,14 @@ export default class MonthRepositoryDatabase implements MonthRepository {
         );
 
        return data.filter(item => item.in_values.length || item.out_values.length).map(item => {
-        const totalIn = item.in_values.reduce((acc, current) => acc += current, 0);
-        const totalOut = item.out_values.reduce((acc, current) => acc += current, 0)
+        const totalIn = item.in_values.reduce((acc, current) => acc + current, 0);
+        const totalOut = item.out_values.reduce((acc, current) => acc + current, 0)
             return {
                 month: item.month_name,
                 in: totalIn.toFixed(2),
                 out: totalOut.toFixed(2),
                 balance: (totalIn - totalOut).toFixed(2)
             }
-           
        });
     }
 

@@ -114,3 +114,35 @@ CREATE TABLE phd.card (
 ALTER table phd.card add column name varchar not null;
 ALTER table phd.card add column cvv varchar not null;
 ALTER TABLE phd.planning_month_item ADD COLUMN id_card integer null REFERENCES phd.card(id);
+
+CREATE TYPE setting_type AS ENUM ('numeric', 'varchar', 'json', 'boolean');
+CREATE TABLE phd.setting (
+    id SERIAL PRIMARY KEY,
+    key VARCHAR NOT NULL,
+    value VARCHAR NOT NULL,
+    value_type setting_type NOT NULL,
+    description VARCHAR NOT NULL
+);
+
+
+CREATE TABLE phd.month_budget (
+    id_type INTEGER NOT NULL REFERENCES phd.item_type(id),
+    id_planning_month INTEGER NOT NULL REFERENCES phd.planning_month(id),
+    amount NUMERIC(10,2) NOT NULL,
+    PRIMARY(id_type, id_planning_month)
+);
+
+CREATE TABLE phd.planning_month_goals(
+    id SERIAL PRIMARY KEY,
+    id_planning_month INTEGER NOT NULL REFERENCES phd.planning_month(id) UNIQUE,
+    money_to_save NUMERIC(10,2) NOT NULL,
+    credit_limit NUMERIC(10,2) NOT NULL
+);
+
+
+-- DEFAULT VALUES TO SETTINGS
+INSERT INTO phd.setting (key, value, value_type, description) VALUES ('max_on_credit', '1200', 'numeric', 'Max to spent on credit');
+-- END
+ALTER TABLE phd.planning_month DROP COLUMN expected_amount;
+ALTER TABLE phd.item_type ADD COLUMN id_parent INTEGER NULL REFERENCES phd.item_type (id);
+ALTER TABLE phd.planning_month ADD COLUMN credit_status NUMERIC(10,2) DEFAULT 0.00;

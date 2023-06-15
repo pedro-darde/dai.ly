@@ -8,7 +8,7 @@ export default class ExpressAdapter implements HttpServer {
   app;
   constructor() {
     this.app = express();
-    this.app.use(express.json());
+    this.app.use(express.json({ limit: "50mb" }));
     this.app.use(cors());
   }
 

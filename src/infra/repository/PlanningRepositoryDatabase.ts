@@ -1,7 +1,10 @@
+import MonthBudget from "../../domain/entity/MonthBudget";
 import Planning from "../../domain/entity/Planning";
-import PlanningMonth from "../../domain/entity/PlanningMonth";
+import PlanningMonth, { TypeSpent } from "../../domain/entity/PlanningMonth";
 import PlanningMonthItem from "../../domain/entity/PlanningMonthItem";
+import TreeSelect from "../../domain/entity/Treeselect";
 import PlanningRepository, {
+  ItemsPlanning,
   PlanningDatabase,
 } from "../../domain/repository/PlanningRepository";
 import Connection from "../database/Connection";
@@ -16,7 +19,7 @@ export default class PlanningRepositoryDatabase
     throw new Error("Method not implemented.");
   }
   constructor(readonly connection: Connection) {
-    super(connection);
+    super(connection, "planning");
   }
 
   async save(planning: Planning): Promise<void> {
@@ -36,22 +39,21 @@ export default class PlanningRepositoryDatabase
           planning.endAt,
         ]
       );
-      console.log(idPlanning);
       if (planning.getMonths().length) {
         for (const month of planning.getMonths()) {
           const [{ id: idMonthPlanning }] = await this.connection.query<
             [{ id: number }]
           >(
-            "INSERT INTO phd.planning_month (id_month, id_planning, balance, expected_amount, total_in, total_out, spent_on_debit, spent_on_credit) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) returning id",
+            "INSERT INTO phd.planning_month (id_month, id_planning, balance, total_in, total_out, spent_on_debit, spent_on_credit, credit_status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) returning id",
             [
               month.idMonth,
               idPlanning,
               month.balance,
-              month.expectedAmount,
               month.totalIn,
               month.totalOut,
               month.spentOnDebit,
               month.spentOnCredit,
+              month.creditStatus,
             ]
           );
           if (month.getItens().length) {
@@ -81,21 +83,43 @@ export default class PlanningRepositoryDatabase
   }
 
   async getByYear(year: number): Promise<Planning | void> {
-    const SQL =
-      "SELECT PLANNING.*," +
-      " (SELECT JSONB_AGG(T) RES" +
-      " FROM (SELECT PLANNING_MONTH.*, JSON_AGG(PLANNING_MONTH_ITEM.* ORDER BY date) AS ITEMS," +
-      "(SELECT jsonb_agg(spents)  as spents FROM (SELECT JSON_BUILD_OBJECT('description', type.description, 'operation',  item.operation ,'value', SUM(item.value), 'type', type.id) as expected " +
-      "FROM phd.item_type type " +
-      "INNER JOIN phd.planning_month_item item ON item.id_type = type.id " +
-      "WHERE item.id_month_planning = PLANNING_MONTH.id " +
-      "GROUP BY item.operation, type.id) AS spents) AS types_spent " +
-      " FROM PHD.PLANNING_MONTH PLANNING_MONTH" +
-      " INNER JOIN PHD.PLANNING_MONTH_ITEM PLANNING_MONTH_ITEM ON PLANNING_MONTH_ITEM.ID_MONTH_PLANNING = PLANNING_MONTH.ID" +
-      " WHERE PLANNING_MONTH.ID_PLANNING = PLANNING.ID" +
-      " GROUP BY PLANNING_MONTH.ID) T) AS MONTHS" +
-      " FROM PHD.PLANNING PLANNING WHERE PLANNING.YEAR = $1 GROUP BY PLANNING.ID;";
-
+    const SQL = `
+        SELECT
+    PLANNING.*,
+    (
+        SELECT JSONB_AGG(T) RES
+        FROM (
+            SELECT
+                PLANNING_MONTH.*,
+                JSON_AGG(PLANNING_MONTH_ITEM.* ORDER BY date) AS ITEMS,
+                COALESCE(
+                    (
+                        SELECT JSONB_AGG(DISTINCT mb.*)
+                        FROM PHD.month_budget mb
+                        WHERE mb.id_planning_month = PLANNING_MONTH.id
+                            AND mb.id_type IS NOT NULL
+                            AND mb.id_planning_month IS NOT NULL
+                    ),
+                    '[]'
+                ) AS budgets
+            FROM
+                PHD.PLANNING_MONTH PLANNING_MONTH
+                INNER JOIN PHD.PLANNING_MONTH_ITEM PLANNING_MONTH_ITEM ON PLANNING_MONTH_ITEM.ID_MONTH_PLANNING = PLANNING_MONTH.ID
+            WHERE
+                PLANNING_MONTH.ID_PLANNING = PLANNING.ID
+            GROUP BY
+                PLANNING_MONTH.ID
+            ORDER BY
+                PLANNING_MONTH.ID_MONTH
+        ) T
+    ) AS MONTHS
+FROM
+    PHD.PLANNING PLANNING
+WHERE
+    PLANNING.YEAR = $1
+GROUP BY
+    PLANNING.ID;
+    `;
     const data = await this.connection.query<PlanningDatabase[]>(SQL, [year]);
     if (data.length) {
       const [planningDatabase] = data;
@@ -108,22 +132,21 @@ export default class PlanningRepositoryDatabase
         planningDatabase.end_at,
         planningDatabase.id
       );
-
       if (planningDatabase.months?.length) {
         for (const month of planningDatabase.months) {
           const planningMonth = new PlanningMonth(
-            planningDatabase.id,
-            parseFloat(month.expected_amount),
+            month.id_month,
             parseFloat(month.spent_on_debit),
             parseFloat(month.spent_on_debit),
             parseFloat(month.total_in),
             parseFloat(month.total_out),
+            parseFloat(month.credit_status),
             planning.id!,
             month.open,
             month.id
           );
-          planningMonth.typesSpent = month.types_spent.map(
-            (item) => item.expected
+          planningMonth.typesSpent = await this.buildNestedTypedSpents(
+            month.items
           );
           if (month.items?.length) {
             for (const item of month.items)
@@ -140,6 +163,18 @@ export default class PlanningRepositoryDatabase
                   item.id
                 )
               );
+          }
+          if (month.budgets?.length) {
+            const monthBudgets = month.budgets.map(
+              (item) =>
+                new MonthBudget(
+                  item.id_type,
+                  item.id_planning_month,
+                  parseFloat(item.amount)
+                )
+            );
+
+            planningMonth.withBudgets(monthBudgets);
           }
           planning.addMonth(planningMonth);
         }
@@ -169,6 +204,24 @@ export default class PlanningRepositoryDatabase
     await this.connection.query(
       `UPDATE phd.planning SET ${setString} WHERE year = $1`,
       [planning.year]
+    );
+  }
+
+  async buildNestedTypedSpents(spents: ItemsPlanning[]) {
+    const itemTypeData = await this.connection.query<any[]>(
+      `SELECT *, description as label from phd.item_type WHERE active = $1`,
+      [true]
+    );
+    for (const itemData of itemTypeData) {
+      itemData.spents = spents.filter((item) => item.id_type === itemData.id);
+    }
+    return TreeSelect.toTreeSelectStyle(itemTypeData, "id");
+  }
+
+  async existingYears(): Promise<{ year: number; id: number }[]> {
+    return await this.connection.query<{ year: number; id: number }[]>(
+      "SELECT id, year FROM phd.planning",
+      []
     );
   }
 }

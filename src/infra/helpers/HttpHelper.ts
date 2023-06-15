@@ -12,7 +12,7 @@ export const notFound = (error: EntityNotFoundError) => ({
 });
 
 export const serverError = (e: Error) => ({
-  statusCode: 500,
+  statusCode: INTERNAL_SERVER_ERROR,
   body: new ServerError(),
 });
 
@@ -23,5 +23,7 @@ export const ok = (data: any) => ({
 
 export const badRequest = (err: Error) => ({
   statusCode: 400,
-  body: err
+  body: err,
 });
+
+export const INTERNAL_SERVER_ERROR = 500;
