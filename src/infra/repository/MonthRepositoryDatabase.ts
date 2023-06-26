@@ -6,13 +6,16 @@ export default class MonthRepositoryDatabase implements MonthRepository {
 
     constructor(readonly connection: Connection) {}
 
+    private static listMonths: Month[] = []
     async list(): Promise<Month[]> {
-        const monthData = await this.connection.query<any[]>("SELECT * FROM phd.months", []);
-        const months: Month[] = []
-        for (const month of monthData) {
-            months.push(new Month(month.id, month.month_name, month.month_as_number))
+        if (MonthRepositoryDatabase.listMonths.length) {
+            return MonthRepositoryDatabase.listMonths
         }
-        return months
+        const monthData = await this.connection.query<any[]>("SELECT * FROM phd.months", []);
+        for (const month of monthData) {
+            MonthRepositoryDatabase.listMonths.push(new Month(month.id, month.month_name, month.month_as_number))
+        }
+        return MonthRepositoryDatabase.listMonths
     }
 
     async reducedMonthValues(planningYear: number): Promise<any> {
