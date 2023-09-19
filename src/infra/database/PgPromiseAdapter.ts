@@ -2,7 +2,7 @@ import Note from "../../domain/entity/Note";
 import Connection from "./Connection";
 import pgp from "pg-promise";
 export default class PgPromiseAdapter implements Connection {
-  pgp;
+  pgp
 
   constructor() {
     this.pgp = pgp()(

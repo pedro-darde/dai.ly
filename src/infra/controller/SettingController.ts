@@ -12,6 +12,7 @@ export default class SettingController {
         const settings = await settingService.getAll();
         return ok(settings);
       } catch (e: any) {
+        console.log("error gettings settings: " , e)
         return serverError(e);
       }
     });
