@@ -29,7 +29,7 @@ export default class DateFnsAdapter implements DateHandler {
             minutes: "differenceInMinutes"
         }
         /** @ts-ignore */
-        return this[mapMethodsNames[returnAs]](firstDate, secondDate);
+        return this[mapMethodsNames[returnAs]](...params);
     }
 
     private differenceInDays(firstDate: Date, secondDate: Date) {

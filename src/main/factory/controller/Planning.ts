@@ -17,8 +17,7 @@ export const makePlanningController = (
   server: HttpServer,
   connection: Connection
 ): PlanningController => {
-  const planningValidations = "year,startAt,title,expectedAmount"
-    .split(",")
+  const planningValidations = ["year","startAt","title","expectedAmount"]
     .map((field) => new RequiredFieldValidation(field));
   const createEditPlanningValidation = new ValidationComposite([
     ...planningValidations,
