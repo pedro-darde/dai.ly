@@ -8,6 +8,7 @@ import { makeCardController } from "./main/factory/controller/Card";
 import { makeDashboardController } from "./main/factory/controller/Dashboard";
 import { makeSettingController } from "./main/factory/controller/Setting";
 import { makeGoalsController } from "./main/factory/controller/Goals";
+import { ok } from "./infra/helpers/HttpHelper";
 const connection = new PgPromiseAdapter();
 const expressServer = makeServer();
 makeTaskController(expressServer, connection);
@@ -22,6 +23,10 @@ makeGoalsController(expressServer, connection);
 expressServer.listen(
   process.env.API_PORT ? parseInt(process.env.API_PORT) : 8080
 );
+
+expressServer.on("get", "/", async (params, body) => {
+  return ok({ message: "Hello World" });
+})
 
 if (process.env.ENV === "production") {
   console.log("vai logar");

@@ -39,6 +39,8 @@ export default class PlanningRepositoryDatabase
           planning.endAt,
         ]
       );
+
+      console.log("id of planning: ", idPlanning)
       if (planning.getMonths().length) {
         for (const month of planning.getMonths()) {
           const [{ id: idMonthPlanning }] = await this.connection.query<

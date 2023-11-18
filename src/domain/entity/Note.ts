@@ -16,6 +16,10 @@ export default class Note {
     this.tasksNotes.push(new NoteTask(task.id, this.id));
   }
 
+  get tasks() { 
+    return this.tasksNotes;
+  }
+
   getId() {
     return this.id;
   }
