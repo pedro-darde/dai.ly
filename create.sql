@@ -1,10 +1,10 @@
-DROP TABLE phd.task_note;
-DROP TABLE phd.tasks;
-DROP TABLE phd.notes;
-DROP TABLE phd.planning_month_item;
-DROP TABLE phd.planning_month;
-DROP TABLE phd.planning;
-DROP TABLE phd.months;
+-- DROP TABLE phd.task_note;
+-- DROP TABLE phd.tasks;
+-- DROP TABLE phd.notes;
+-- DROP TABLE phd.planning_month_item;
+-- DROP TABLE phd.planning_month;
+-- DROP TABLE phd.planning;
+-- DROP TABLE phd.months;
 CREATE TABLE phd.notes (
     id SERIAL PRIMARY KEY,
     description varchar not null,
