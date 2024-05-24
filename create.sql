@@ -1,10 +1,10 @@
-DROP TABLE phd.task_note;
-DROP TABLE phd.tasks;
-DROP TABLE phd.notes;
-DROP TABLE phd.planning_month_item;
-DROP TABLE phd.planning_month;
-DROP TABLE phd.planning;
-DROP TABLE phd.months;
+-- DROP TABLE phd.task_note;
+-- DROP TABLE phd.tasks;
+-- DROP TABLE phd.notes;
+-- DROP TABLE phd.planning_month_item;
+-- DROP TABLE phd.planning_month;
+-- DROP TABLE phd.planning;
+-- DROP TABLE phd.months;
 CREATE TABLE phd.notes (
     id SERIAL PRIMARY KEY,
     description varchar not null,
@@ -95,7 +95,6 @@ INSERT INTO phd.months (month_name, month_as_number) VALUES
 
 
 INSERT INTO phd.item_type (description) VALUES ('Education'), ('Invoice'), ('Salary'), ('Food'), ('Drink'), ('Party');
-ALTER TABLE phd.planning_month_item ADD COLUMN id_type integer not null REFERENCES phd.item_type (id);
 ALTER TABLE phd.planning_month_item ALTER COLUMN operation TYPE varchar;
 ALTER TABLE phd.planning_month_item ALTER COLUMN date TYPE DATE;
 
@@ -111,8 +110,6 @@ CREATE TABLE phd.card (
     cvv varchar not null
 );
 
-ALTER table phd.card add column name varchar not null;
-ALTER table phd.card add column cvv varchar not null;
 ALTER TABLE phd.planning_month_item ADD COLUMN id_card integer null REFERENCES phd.card(id);
 
 CREATE TYPE setting_type AS ENUM ('numeric', 'varchar', 'json', 'boolean');
@@ -129,7 +126,7 @@ CREATE TABLE phd.month_budget (
     id_type INTEGER NOT NULL REFERENCES phd.item_type(id),
     id_planning_month INTEGER NOT NULL REFERENCES phd.planning_month(id),
     amount NUMERIC(10,2) NOT NULL,
-    PRIMARY(id_type, id_planning_month)
+    PRIMARY KEY(id_type, id_planning_month)
 );
 
 CREATE TABLE phd.planning_month_goals(

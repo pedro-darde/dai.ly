@@ -29,7 +29,7 @@ export default abstract class BaseRepositoryDatabase implements BaseRepository {
 
   /**
    * Inserts a row on specified table
-   * Remember to pass data at the same order of {this.dbKeys}
+   * Remember to pass data at the same order of ##{this.dbKeys}
    **/
   async insert<T extends { [key: string]: any }>(data: T): Promise<void> {
     if (this.keys?.length) {
@@ -63,7 +63,6 @@ export default abstract class BaseRepositoryDatabase implements BaseRepository {
       .join(" , ")
       const where = this.buildWhereForUpdate()
       const sql = `UPDATE phd.${this.table} ${"SET ".concat(setString)} ${where}`
-      console.log(sql, Object.values<T>(data).reverse())
       await this.connection.query(sql, Object.values<T>(data).reverse())
     }
   }
