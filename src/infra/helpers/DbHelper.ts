@@ -39,9 +39,11 @@ export const getSetByKeysValues = <T>(item: T, keys: ArrangeOfSet<T>[]) => {
 };
 
 const getItemValue = (item: any, key: any) => {
+  console.log(item[key]  === "undefined" )
   if (
     !item.hasOwnProperty(key) ||
     item[key] === null ||
+    item[key] === undefined ||
     item[key] === "undefined"
   )
     return "null" + (key.startsWith("id") ? "::integer" : "");

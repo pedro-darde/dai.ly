@@ -3,6 +3,7 @@ import GetMonths from "../../application/GetMonths";
 import GetPlanning from "../../application/GetPlanning";
 import GoalsService from "../../application/GoalsService";
 import InstallMentservice from "../../application/InstallmentService";
+import RemovePlanningItem from "../../application/RemovePlanningItem";
 import StartPlanning from "../../application/StartPlanning";
 import { Validation } from "../../presentation/protocols/Validation";
 import { badRequest, ok, serverError } from "../helpers/HttpHelper";
@@ -15,6 +16,7 @@ export default class PlanningController {
     readonly getPlanning: GetPlanning,
     readonly getMonths: GetMonths,
     readonly editPlanning: EditPlanning,
+    readonly removeItem: RemovePlanningItem,
     readonly installmentService: InstallMentservice,
     readonly createPlanningValidation: Validation,
     readonly editPlanningValidation: Validation
@@ -82,5 +84,19 @@ export default class PlanningController {
         }
       }
     );
+
+    httpServer.on("delete", "/planning/:year/item/:idPlanningMonthItem", async function (params, body) {
+      console.log(params)
+      try {
+        await removeItem.execute({
+          id: params.idPlanningMonthItem,
+        })
+        return ok({ message: "Item removed"})
+      } catch (e: any) {
+        console.log(e)
+        return serverError(e)
+      }
+      
+    })
   }
 }

@@ -93,7 +93,7 @@ export default class PlanningRepositoryDatabase
         FROM (
             SELECT
                 PLANNING_MONTH.*,
-                JSON_AGG(PLANNING_MONTH_ITEM.* ORDER BY date) AS ITEMS,
+                COALESCE (JSON_AGG(PLANNING_MONTH_ITEM.* ORDER BY date) FILTER (WHERE PLANNING_MONTH_ITEM.id IS NOT NULL), '[]') as ITEMS,
                 COALESCE(
                     (
                         SELECT JSONB_AGG(DISTINCT mb.*)
@@ -106,7 +106,7 @@ export default class PlanningRepositoryDatabase
                 ) AS budgets
             FROM
                 PHD.PLANNING_MONTH PLANNING_MONTH
-                INNER JOIN PHD.PLANNING_MONTH_ITEM PLANNING_MONTH_ITEM ON PLANNING_MONTH_ITEM.ID_MONTH_PLANNING = PLANNING_MONTH.ID
+                LEFT JOIN PHD.PLANNING_MONTH_ITEM PLANNING_MONTH_ITEM ON PLANNING_MONTH_ITEM.ID_MONTH_PLANNING = PLANNING_MONTH.ID
             WHERE
                 PLANNING_MONTH.ID_PLANNING = PLANNING.ID
             GROUP BY
@@ -122,6 +122,7 @@ WHERE
 GROUP BY
     PLANNING.ID;
     `;
+    
     const data = await this.connection.query<PlanningDatabase[]>(SQL, [year]);
     if (data.length) {
       const [planningDatabase] = data;
