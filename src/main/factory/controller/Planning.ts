@@ -10,6 +10,7 @@ import { makeGetMonths } from "../usecases/GetMonths";
 import { makeGetPlanning } from "../usecases/GetPlanning";
 import { makeGoalsSerivce } from "../usecases/GoalsService";
 import { makeInstallmentService } from "../usecases/InstallmentService";
+import { makeRemoveItem } from "../usecases/RemoveItem";
 import { makeStartPlanning } from "../usecases/StartPlanning";
 import { makeEditPlanningValidation } from "../validation/EditPlanning";
 
@@ -58,6 +59,7 @@ export const makePlanningController = (
     makeGetPlanning(connection),
     makeGetMonths(connection),
     makeEditPlanning(connection),
+    makeRemoveItem(connection),
     makeInstallmentService(connection),
     createEditPlanningValidation,
     makeEditPlanningValidation()

@@ -10,7 +10,7 @@ export default class EditPlanning {
   constructor(
     readonly planningRepository: PlanningRepository,
     readonly planningMonthRepository: PlanningMonthRepository,
-    readonly planningMonthItemRepository: PlanningMonthItemRepository
+    readonly planningMonthItemRepository: PlanningMonthItemRepository,
   ) {}
   async execute(year: number, input: Input): Promise<void> {
     try {
@@ -155,6 +155,7 @@ type ToAddOrUpdateMonths = {
     };
   }[];
 };
+
 type Input = {
   status: number;
   id: number;
