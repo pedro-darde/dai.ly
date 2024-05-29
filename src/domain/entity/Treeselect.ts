@@ -5,11 +5,11 @@ export default class TreeSelect {
     readonly children?: TreeSelect[]
   ) {}
   static toTreeSelectStyle(itens: any[], itemValueKey: string): any[] {
-    const mapItems = new Map<number, any>();
+    const mapItems = new Map<number, { children: any[ ]}>();
     const nestedItems: any[] = [];
 
     for (const item of itens) {
-      mapItems.set(item[itemValueKey], item);
+      mapItems.set(item[itemValueKey], { ...item, key: item[itemValueKey], icon: 'pi pi-fw pi-cog',});
     }
 
     for (const item of itens) {
@@ -17,10 +17,10 @@ export default class TreeSelect {
         const parent = mapItems.get(item.id_parent);
         if (parent) {
           parent["children"] = parent["children"] || [];
-          parent["children"].push(item);
+          parent["children"].push({ ...item, key:  item[itemValueKey], icon: 'pi pi-fw pi-cog' });
         }
       } else {
-        nestedItems.push(item);
+        nestedItems.push({ ... item, key: item[itemValueKey], icon: 'pi pi-fw pi-cog'});
       }
     }
     return nestedItems;
