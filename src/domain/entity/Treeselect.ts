@@ -9,7 +9,9 @@ export default class TreeSelect {
     const nestedItems: any[] = [];
 
     for (const item of itens) {
-      mapItems.set(item[itemValueKey], { ...item, key: item[itemValueKey], icon: 'pi pi-fw pi-cog',});
+      item.key = item[itemValueKey];
+      item.icon = 'pi pi-fw pi-cog';
+      mapItems.set(item[itemValueKey],item);
     }
 
     for (const item of itens) {
@@ -17,10 +19,10 @@ export default class TreeSelect {
         const parent = mapItems.get(item.id_parent);
         if (parent) {
           parent["children"] = parent["children"] || [];
-          parent["children"].push({ ...item, key:  item[itemValueKey], icon: 'pi pi-fw pi-cog' });
+          parent["children"].push(item);
         }
       } else {
-        nestedItems.push({ ... item, key: item[itemValueKey], icon: 'pi pi-fw pi-cog'});
+        nestedItems.push(item);
       }
     }
     return nestedItems;
