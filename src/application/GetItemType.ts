@@ -6,6 +6,9 @@ export default class GetItemType {
 
   async execute() {
     const items = await this.itemTypeRepository.list();
-    return TreeSelect.toTreeSelectStyle(items, "id");
+    return {
+      plain: items,
+      treeSelect: TreeSelect.toTreeSelectStyle(items, "id"),
+    };
   }
 }

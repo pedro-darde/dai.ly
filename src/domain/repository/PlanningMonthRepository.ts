@@ -8,4 +8,5 @@ export default interface PlanningMonthRepository extends BaseRepository {
   findOrCreate: (idMonth: number, planningYear: number) => Promise<number>;
   createWithItems: (data: PlanningMonth) => Promise<number>;
   createMultipleWithItems: (data: PlanningMonth[]) => Promise<number[]>;
+  getByPlanningAndMonth: (idPlanning: number, idMonth: number) => Promise<number | undefined >;
 }

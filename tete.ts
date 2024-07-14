@@ -3,7 +3,7 @@ export const getObjectArrayAsString = <T>(items: Array<T>, keys: Array<keyof T>)
                 .map(item => `(${item.join(",")})`)
                 .join(",")
  }
-export const getObjectAsString = (obj: any, keys: any[]) => `(${keys.map(key => getItemValue(obj, key)).join(", ")})`;
+export const getObjectAsString = <T>(obj: T, keys: (keyof T)[]) => `(${keys.map(key => getItemValue(obj, key)).join(", ")})`;
 
 const getItemValue = (item: any, key: any) => {
 if (!item.hasOwnProperty(key) || item[key] === null) return 'null'
@@ -13,7 +13,8 @@ return `'${item[key]}'`
 
 const obj = {
     name: "robert",
-    nickName: "bob"
+    nickName: "bob",
+    FODASE: 123
 }
 
-console.log(getObjectAsString(obj, ["nickName", "name"]))
+console.log(getObjectAsString(obj, ["nickName", "name", "FODASE"]))

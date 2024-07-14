@@ -5,12 +5,14 @@ import PlanningMonthItem from "../domain/entity/PlanningMonthItem";
 import PlanningMonthItemRepository from "../domain/repository/PlanningMonthItemRepository";
 import PlanningMonthRepository from "../domain/repository/PlanningMonthRepository";
 import PlanningRepository from "../domain/repository/PlanningRepository";
+import DateHandler from "../infra/date/DateHandler";
 
 export default class EditPlanning {
   constructor(
     readonly planningRepository: PlanningRepository,
     readonly planningMonthRepository: PlanningMonthRepository,
     readonly planningMonthItemRepository: PlanningMonthItemRepository,
+    readonly dateHandler: DateHandler
   ) {}
   async execute(year: number, input: Input): Promise<void> {
     try {
@@ -101,7 +103,74 @@ export default class EditPlanning {
       throw e;
     }
   }
+
+  async createMoviment({ item, planning }: InputCreateMoviment) {
+    console.log({ item });
+    const itemDate = this.dateHandler.createFromFormat(item.date);
+
+    console.log({ itemDate});
+
+    const month = itemDate.getMonth() + 1;
+
+    let idPlanningMonth =
+      await this.planningMonthRepository.getByPlanningAndMonth(planning, month);
+
+    if (!idPlanningMonth) {
+      const planningMonth = new PlanningMonth(
+        month,
+        0,
+        0,
+        0,
+        0,
+        0,
+        planning,
+        false
+      );
+      idPlanningMonth = await this.planningMonthRepository.create(
+        planningMonth
+      );
+    }
+
+    const monthItem = PlanningMonthItem.createFromObject({
+      date: item.date,
+      description: item.description,
+      idType: item.idType,
+      operation: item.operation,
+      paymentMethod: item.paymentMethod,
+      value: item.value,
+      idCard: item.idCard,
+      idPlanningMonth: idPlanningMonth,
+      isInvestiment: item.isInvestiment,
+    });
+
+    await this.planningMonthItemRepository.create(monthItem);
+  }
+
+  async editMoviment({ item }: InputEditMoviment) {
+    await this.planningMonthItemRepository.bulkUpdate([item]);
+  }
 }
+
+type InputCreateMoviment = {
+  item: ItemInput;
+  planning: number;
+};
+
+type InputEditMoviment = {
+  item: ItemInput & { id: number };
+  planning: number;
+};
+
+type ItemInput = {
+  idType: number;
+  value: number;
+  operation: "in" | "out";
+  date: string;
+  paymentMethod: "debit" | "credit" | null;
+  description: string;
+  idCard?: number;
+  isInvestiment: boolean;
+};
 
 type ToAddOrUpdateMonths = {
   toAdd: {
@@ -112,15 +181,7 @@ type ToAddOrUpdateMonths = {
     spentOnDebit: number;
     creditStatus: number;
     items: {
-      toAdd: {
-        idType: number;
-        value: number;
-        operation: "in" | "out";
-        date: Date;
-        paymentMethod: "debit" | "credit" | null;
-        description: string;
-        idCard?: number;
-      }[];
+      toAdd: ItemInput[];
     };
   }[];
   toUpdate: {
@@ -137,9 +198,10 @@ type ToAddOrUpdateMonths = {
         value: number;
         idType: number;
         operation: "in" | "out";
-        date: Date;
+        date: string;
         paymentMethod: "debit" | "credit" | null;
         description: string;
+        isInvestiment: boolean;
       }[];
       toUpdate: {
         idPlanningMonth: number;
@@ -147,10 +209,11 @@ type ToAddOrUpdateMonths = {
         idType: number;
         value: number;
         operation: "in" | "out";
-        date: Date;
+        date: string;
         paymentMethod: "debit" | "credit" | null;
         description: string;
         idCard?: number;
+        isInvestiment: boolean;
       }[];
     };
   }[];

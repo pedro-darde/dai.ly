@@ -85,18 +85,43 @@ export default class PlanningController {
       }
     );
 
-    httpServer.on("delete", "/planning/:year/item/:idPlanningMonthItem", async function (params, body) {
-      console.log(params)
+    httpServer.on("post", "/planning/:year/item", async function (_, body) {
       try {
-        await removeItem.execute({
-          id: params.idPlanningMonthItem,
-        })
-        return ok({ message: "Item removed"})
+        await editPlanning.createMoviment(body);
+        return ok({ message: "Item created" });
       } catch (e: any) {
-        console.log(e)
-        return serverError(e)
+        console.log(e);
+        return serverError(e);
       }
-      
-    })
+    });
+    httpServer.on(
+      "put",
+      "/planning/:year/item/:idPlanningMonthItem",
+      async function (params, body) {
+        try {
+          await editPlanning.editMoviment(body);
+          return ok({ message: "Item edited" });
+        } catch (e: any) {
+          console.log(e);
+          return serverError(e);
+        }
+      }
+    );
+    httpServer.on(
+      "delete",
+      "/planning/:year/item/:idPlanningMonthItem",
+      async function (params, body) {
+        console.log(params);
+        try {
+          await removeItem.execute({
+            id: params.idPlanningMonthItem,
+          });
+          return ok({ message: "Item removed" });
+        } catch (e: any) {
+          console.log(e);
+          return serverError(e);
+        }
+      }
+    );
   }
 }

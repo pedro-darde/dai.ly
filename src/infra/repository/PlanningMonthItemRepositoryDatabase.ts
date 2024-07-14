@@ -25,6 +25,7 @@ export default class PlanningMonthItemRepositoryDatabase
       idCard: "id_card",
       idType: "id_type",
       idPlanningMonth: "id_month_planning",
+      isInvestiment: "is_investiment",
     };
   constructor(readonly connection: Connection) {
     super(connection, "planning_month_item");
@@ -67,5 +68,22 @@ export default class PlanningMonthItemRepositoryDatabase
       .map((item) => item.dbKey)
       .join(",")})  WHERE planning_month_item.id = cte.id`;
     await this.connection.query(SQL, []);
+  }
+
+  async create(data: PlanningMonthItem): Promise<number> {
+    const [{ id }] = await this.connection.query<[{ id: number }]>(
+      "INSERT INTO phd.planning_month_item (date, description, operation, value, payment_method, id_card, id_type, id_month_planning) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id",
+      [
+        data.date,
+        data.description,
+        data.operation,
+        data.value,
+        data.paymentMethod,
+        data.idCard,
+        data.idType,
+        data.idPlanningMonth,
+      ]
+    );
+    return id;
   }
 }

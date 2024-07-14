@@ -37,10 +37,11 @@ export type ItemsPlanning = {
   value: string;
   description: string;
   operation: "in" | "out";
-  date: Date;
+  date: string;
   id_card?: number;
   payment_method: "debit" | "credit";
   id_type: number;
+  is_investiment: boolean;
 };
 
 export type TypesSpentDatabase = {

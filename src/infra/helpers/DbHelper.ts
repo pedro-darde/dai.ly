@@ -1,6 +1,5 @@
 import { isValid } from "date-fns";
 
-
 const letterRegex = /[a-zA-Z]/g;
 export const getObjectArrayAsString = <T>(
   items: Array<T>,
@@ -39,7 +38,7 @@ export const getSetByKeysValues = <T>(item: T, keys: ArrangeOfSet<T>[]) => {
 };
 
 const getItemValue = (item: any, key: any) => {
-  console.log(item[key]  === "undefined" )
+  console.log(item[key] === "undefined");
   if (
     !item.hasOwnProperty(key) ||
     item[key] === null ||
@@ -49,9 +48,8 @@ const getItemValue = (item: any, key: any) => {
     return "null" + (key.startsWith("id") ? "::integer" : "");
   if (typeof item[key] === "number" || !isNaN(+item[key])) return item[key];
 
-console.log(isValid(new Date(item[key])), item[key])
-
-  if (isValid(new Date(item[key])) && !letterRegex.test(item[key])) return `'${item[key]}'::date`;
+  if (isValid(new Date(item[key])) && !letterRegex.test(item[key]))
+    return `'${item[key]}'::date`;
   return `'${item[key]}'`;
 };
 

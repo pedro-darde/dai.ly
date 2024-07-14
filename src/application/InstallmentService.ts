@@ -35,7 +35,8 @@ export default class InstallMentservice {
               monthItem.idType,
               undefined,
               monthItem.idCard,
-              monthItem.paymentMethod
+              monthItem.paymentMethod,
+              monthItem.isInvestiment
             )
           );
           months.push(planningMonth);
@@ -52,7 +53,7 @@ export default class InstallMentservice {
 type ItemInput = {
   description: string;
   value: number;
-  date: Date;
+  date: string;
   month: number;
   idType: number;
   paymentMethod: "debit" | "credit";
@@ -61,6 +62,7 @@ type ItemInput = {
   planning?: number;
   idPlanningMonth?: number;
   idCard?: number;
+  isInvestiment: boolean;
 };
 
 type Input = {

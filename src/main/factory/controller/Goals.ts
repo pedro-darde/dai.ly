@@ -12,7 +12,6 @@ export const makeGoalsController = (
 ) => {
   const goalsValidation = new ValidationComposite([
     new RequiredArrayFieldsValidation("budgets", [
-      { type: "number", field: "planningMonth" },
       { type: "number", field: "type" },
       { type: "number", field: "amount" },
     ]),

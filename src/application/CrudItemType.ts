@@ -23,9 +23,15 @@ export default class CrudItemType {
     );
     await this.itemTypeRepository.update(itemType);
   }
+  async updateMany(items: InputAddEdit[]) {
+    for (const item of items) {
+      await this.update(item.id!, item);
+    }
+  }
 }
 
 type InputAddEdit = {
+  id?: number;
   active: boolean;
   description: string;
   parent_id?: number;

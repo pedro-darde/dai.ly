@@ -4,8 +4,6 @@ import Connection from "../database/Connection";
 import {
   ArrangeOfSet,
   getObjectArrayAsString,
-  getSetByKeysValues,
-  getSetForCteByKeys,
   getSetString,
   getValuesString,
 } from "../helpers/DbHelper";
@@ -107,5 +105,13 @@ export default class PlanningMonthRepositoryDatabase
       promises.push(this.createWithItems(month));
     }
     return await Promise.all(promises);
+  }
+
+  async getByPlanningAndMonth(idPlanning: number, idMonth: number) {
+    const [data] = await this.connection.query<[{ id?: number }]>(
+      "SELECT * FROM phd.planning_month WHERE id_planning = $1 AND id_month = $2",
+      [idPlanning, idMonth]
+    );
+    return data?.id;
   }
 }

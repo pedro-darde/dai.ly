@@ -5,13 +5,13 @@ export default class TreeSelect {
     readonly children?: TreeSelect[]
   ) {}
   static toTreeSelectStyle(itens: any[], itemValueKey: string): any[] {
-    const mapItems = new Map<number, { children: any[ ]}>();
+    const mapItems = new Map<number, { children: any[] }>();
     const nestedItems: any[] = [];
 
     for (const item of itens) {
       item.key = item[itemValueKey];
-      item.icon = 'pi pi-fw pi-cog';
-      mapItems.set(item[itemValueKey],item);
+      item.icon = "pi pi-fw pi-cog";
+      mapItems.set(item[itemValueKey], item);
     }
 
     for (const item of itens) {

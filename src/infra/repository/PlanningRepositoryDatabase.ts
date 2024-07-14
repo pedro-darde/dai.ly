@@ -40,7 +40,7 @@ export default class PlanningRepositoryDatabase
         ]
       );
 
-      console.log("id of planning: ", idPlanning)
+      console.log("id of planning: ", idPlanning);
       if (planning.getMonths().length) {
         for (const month of planning.getMonths()) {
           const [{ id: idMonthPlanning }] = await this.connection.query<
@@ -122,7 +122,7 @@ WHERE
 GROUP BY
     PLANNING.ID;
     `;
-    
+
     const data = await this.connection.query<PlanningDatabase[]>(SQL, [year]);
     if (data.length) {
       const [planningDatabase] = data;
@@ -163,6 +163,7 @@ GROUP BY
                   item.id_month_planning,
                   item.id_card,
                   item.payment_method,
+                  item.is_investiment,
                   item.id
                 )
               );

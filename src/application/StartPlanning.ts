@@ -39,7 +39,8 @@ export default class StartPlanning {
                 item.idType,
                 item.idCard,
                 undefined,
-                item.paymentMethod
+                item.paymentMethod,
+                item.isInvestiment
               )
             );
           }
@@ -72,11 +73,12 @@ type InputCreate = {
     items: {
       value: number;
       operation: "in" | "out";
-      date: Date;
+      date: string;
       paymentMethod: "debit" | "credit" | null;
       description: string;
       idType: number;
       idCard: number;
+      isInvestiment: boolean;
     }[];
   }[];
 };

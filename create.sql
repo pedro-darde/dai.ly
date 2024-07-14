@@ -143,3 +143,4 @@ INSERT INTO phd.setting (key, value, value_type, description) VALUES ('max_on_cr
 ALTER TABLE phd.planning_month DROP COLUMN expected_amount;
 ALTER TABLE phd.item_type ADD COLUMN id_parent INTEGER NULL REFERENCES phd.item_type (id);
 ALTER TABLE phd.planning_month ADD COLUMN credit_status NUMERIC(10,2) DEFAULT 0.00;
+ALTER TABLE phd.planning_month_item ADD COLUMN is_investiment BOOLEAN DEFAULT false;

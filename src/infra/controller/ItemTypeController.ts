@@ -9,7 +9,8 @@ export default class ItemTypeController {
     readonly httpServer: HttpServer,
     readonly getItems: GetItemType,
     readonly crudItem: CrudItemType,
-    readonly crudValidation: Validation
+    readonly crudValidation: Validation,
+    readonly manyCrudValidation: Validation
   ) {
     httpServer.on("get", "/itemType", async function (params, body) {
       try {
@@ -37,6 +38,18 @@ export default class ItemTypeController {
         if (error) return badRequest(error);
         await crudItem.update(params.id, body);
         return ok({ message: "Item updated" });
+      } catch (e: any) {
+        console.error(e);
+        return serverError(e);
+      }
+    });
+
+    httpServer.on("post", "/itemType/updateMany", async function (_, body) {
+      try {
+        const error = await manyCrudValidation.validate(body);
+        if (error) return badRequest(error);
+        await crudItem.updateMany(body.items);
+        return ok({ message: "Items updated" });
       } catch (e: any) {
         console.error(e);
         return serverError(e);
