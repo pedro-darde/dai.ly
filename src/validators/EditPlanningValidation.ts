@@ -17,12 +17,12 @@ export default class EditPlanningValidation implements Validation {
   ];
 
   async validate(input: any): Promise<void | Error> {
-    if (input.months.toAdd) {
+    if (input.months?.toAdd) {
       const error = this.validateMonths(input.months.toAdd);
       if (error) return error;
     }
 
-    if (input.months.toUpdate) {
+    if (input.months?.toUpdate) {
       const error = this.validateMonths(input.months.toUpdate);
       if (error) return error;
     }

@@ -30,6 +30,11 @@ export default class RequiredArrayFieldsValidation implements Validation {
       arrayName = extraProps.arrayName;
       fields = extraProps.fields;
     }
+
+    if (!input[arrayName]) {
+      return new MissingParamError(arrayName, this.arrayName);
+    }
+
     for (const item of input[arrayName]) {
       for (const { field, type, extraFields } of fields) {
         let extraMessage = `${this.arrayName}[${

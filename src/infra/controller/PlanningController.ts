@@ -23,6 +23,7 @@ export default class PlanningController {
   ) {
     httpServer.on("post", "/planning", async function (params, body) {
       try {
+        console.log("estou criando um nvo amigao");
         const errors = await createPlanningValidation.validate(body);
         if (errors) return badRequest(errors);
         await startPlanning.execute(body);

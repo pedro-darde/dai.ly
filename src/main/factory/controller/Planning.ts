@@ -22,36 +22,6 @@ export const makePlanningController = (
     .map((field) => new RequiredFieldValidation(field));
   const createEditPlanningValidation = new ValidationComposite([
     ...planningValidations,
-    new EditPlanningValidation(),
-    new RequiredArrayFieldsValidation("months", [
-      { type: "number", field: "idMonth" },
-      { type: "number", field: "totalIn" },
-      { type: "number", field: "totalOut" },
-      { type: "number", field: "spentOnDebit" },
-      { type: "number", field: "spentOnCredit" },
-      {
-        type: "object",
-        field: "items",
-        extraFields: {
-          arrayName: "items",
-          parentCount: 0,
-          fields: [
-            {
-              field: "value",
-              type: "number",
-            },
-            {
-              field: "date",
-              type: "string",
-            },
-            {
-              field: "operation",
-              type: "string",
-            },
-          ],
-        },
-      },
-    ]),
   ]);
   return new PlanningController(
     server,
